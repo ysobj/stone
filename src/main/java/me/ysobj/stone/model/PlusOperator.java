@@ -18,9 +18,13 @@ public class PlusOperator implements Operator {
 			return lvalue.toString() + rvalue.toString();
 		}
 		if(lvalue instanceof Number && rvalue instanceof Number) {
-			return ((Number)lvalue).longValue() + ((Number)rvalue).longValue();
+			return calculate((Number)lvalue, (Number)rvalue);
 		}
 		return null;
+	}
+	
+	protected Number calculate(Number a, Number b) {
+		return a.longValue() + b.longValue();
 	}
 
 }
