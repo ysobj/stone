@@ -12,4 +12,9 @@ public class NumberLiteral extends ASTNode {
 		return token.getOriginal();
 	}
 
+	@Override
+	public Object evaluate(Context context) {
+		return Long.parseLong(token.getOriginal());
+	}
+
 }
