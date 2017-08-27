@@ -7,6 +7,8 @@ import me.ysobj.stone.model.Assign;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.model.MultiplyOperator;
+import me.ysobj.stone.model.Operator;
+import me.ysobj.stone.model.OperatorNode;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class StoneParser implements Parser {
@@ -23,8 +25,9 @@ public class StoneParser implements Parser {
 				if (children[1] == null) {
 					return children[0];
 				}
-				ASTNodeList list = (ASTNodeList)children[1];
-				return new BinaryExpression(children[0], new MultiplyOperator(), list.getNodes()[1]);
+				ASTNodeList list = (ASTNodeList) children[1];
+				Operator operator = ((OperatorNode) list.getNodes()[0]).getOperator();
+				return new BinaryExpression(children[0], operator, list.getNodes()[1]);
 			}
 
 		};

@@ -29,6 +29,15 @@ public class StoneParserTest {
 		assertThat(context.get("hoge"), is(246L));
 	}
 
+	@Test
+	public void test3() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 - 2"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(121L));
+	}
+
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str, new String[] { "+", "-", "*", "/" }, new String[] { "=" });
 	}

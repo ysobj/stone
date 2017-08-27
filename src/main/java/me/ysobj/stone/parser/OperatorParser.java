@@ -2,6 +2,7 @@ package me.ysobj.stone.parser;
 
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
+import me.ysobj.stone.model.OperatorNode;
 import me.ysobj.stone.model.Token;
 import me.ysobj.stone.model.Token.TokenType;
 import me.ysobj.stone.tokenizer.Tokenizer;
@@ -18,7 +19,7 @@ public class OperatorParser implements Parser {
 		}
 		if (token.getType() == TokenType.OPERATOR) {
 			tokenizer.next();
-			return new ASTNode(token);
+			return new OperatorNode(token);
 		}
 		throw new ParseException();
 	}
