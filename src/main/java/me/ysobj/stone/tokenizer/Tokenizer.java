@@ -26,6 +26,8 @@ public class Tokenizer {
 
 	private static final int COMMA = (int) ',';
 
+	private static final int TERMINATOR = (int) ';';
+
 	public Tokenizer(String string) {
 		this(string, new String[] {}, new String[] {});
 	}
@@ -122,6 +124,13 @@ public class Tokenizer {
 				case COMMA:
 					if (sb.length() > 0) {
 						this.preRead = r;
+						return createToken(sb.toString(), readLength);
+					} else {
+						return createToken(String.valueOf((char) r), readLength);
+					}
+				case TERMINATOR:
+					if (sb.length() > 0) {
+						this.preRead = -1;
 						return createToken(sb.toString(), readLength);
 					} else {
 						return createToken(String.valueOf((char) r), readLength);

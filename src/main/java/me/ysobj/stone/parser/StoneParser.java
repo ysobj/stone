@@ -31,7 +31,7 @@ public class StoneParser implements Parser {
 			}
 
 		};
-		parser = new SequenceParser(new IdentifierParser(), new KeywordParser("="), expression) {
+		Parser assign = new SequenceParser(new IdentifierParser(), new KeywordParser("="), expression) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -39,6 +39,7 @@ public class StoneParser implements Parser {
 			}
 
 		};
+		parser = new SequenceParser(assign, new OptionalParser(new RepeatParser(assign)));
 
 	}
 
@@ -50,4 +51,5 @@ public class StoneParser implements Parser {
 	// factor := NUMBER | STRING | IDENTIFIER
 	// expression := factor [OPERATOR factor]
 	// assign := IDENTIFIER '=' expression
+	// code := assign [TERMINATER assign]*
 }

@@ -13,7 +13,7 @@ import me.ysobj.stone.model.Token.TokenType;
 public class TokenizerTest {
 
 	protected Tokenizer createTokenizer(String str) {
-		return new Tokenizer(str, new String[] { "*","+" }, new String[] { "select", "from" });
+		return new Tokenizer(str, new String[] { "*", "+", "=" }, new String[] { "select", "from" });
 	}
 
 	@Test
@@ -302,6 +302,29 @@ public class TokenizerTest {
 	public void testNullReader() {
 		Tokenizer tokenizer = new Tokenizer((Reader) null);
 		assertThat(tokenizer.hasNext(), is(false));
+	}
+
+	@Test
+	public void testMultipleStatement() {
+		Tokenizer tokenizer = createTokenizer("hoge = 123; fuga = 246");
+		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("hoge"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("123"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("fuga"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("246"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
 	}
 
 }
