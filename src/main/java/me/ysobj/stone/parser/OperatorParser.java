@@ -3,16 +3,11 @@ package me.ysobj.stone.parser;
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.Token;
+import me.ysobj.stone.model.Token.TokenType;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
-public class KeywordParser implements Parser {
-	protected String keyword;
-
-	public KeywordParser(String keyword) {
-		this.keyword = keyword;
-	}
-
-	public KeywordParser() {
+public class OperatorParser implements Parser {
+	public OperatorParser() {
 	}
 
 	@Override
@@ -21,7 +16,7 @@ public class KeywordParser implements Parser {
 		if (token == Token.EOF) {
 			throw new ParseException();
 		}
-		if (keyword == null || keyword.equals(token.getOriginal())) {
+		if (token.getType() == TokenType.OPERATOR) {
 			tokenizer.next();
 			return new ASTNode(token);
 		}
@@ -30,7 +25,7 @@ public class KeywordParser implements Parser {
 
 	@Override
 	public String toString() {
-		return keyword != null ? keyword : "KEYWORD";
+		return "OPERATOR";
 	}
 
 }

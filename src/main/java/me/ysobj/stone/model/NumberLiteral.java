@@ -1,10 +1,9 @@
 package me.ysobj.stone.model;
 
 public class NumberLiteral extends ASTNode {
-	private Token token;
 
 	public NumberLiteral(Token token) {
-		this.token = token;
+		super(token);
 	}
 
 	@Override

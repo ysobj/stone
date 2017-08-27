@@ -10,7 +10,20 @@ public class StoneParser implements Parser {
 	Parser parser;
 
 	public StoneParser() {
-		parser = new SequenceParser(new IdentifierParser(), new KeywordParser("="), new NumberParser()) {
+		Parser factor = new ChoiceParser(new NumberParser(), new StringParser(), new IdentifierParser());
+		Parser operator = new OperatorParser();
+		Parser expression = new SequenceParser(factor, new OptionalParser(new SequenceParser(operator, factor))) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				if (children[1] == null) {
+					return children[0];
+				}
+				return super.build(children);
+			}
+
+		};
+		parser = new SequenceParser(new IdentifierParser(), new KeywordParser("="), expression) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {

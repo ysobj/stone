@@ -11,7 +11,7 @@ public class CommaParser implements Parser {
 		Token token = tokenizer.peek();
 		if (token.getType() == Token.TokenType.COMMA) {
 			tokenizer.next();
-			return new ASTNode();
+			return new ASTNode(token);
 		}
 		throw new ParseException();
 	}
