@@ -1,11 +1,9 @@
 package me.ysobj.stone.model;
 
-
 public class Token {
-	private static final char QUOTE = '\'';
 
 	public static enum TokenType {
-		KEYWORD, STRING, NUMBER, OPERATOR, COMMA, OTHER
+		KEYWORD, IDENTIFIER, STRING, NUMBER, OPERATOR, COMMA, OTHER
 	}
 
 	public static final Token EOF = new Token("", TokenType.OTHER, 0);
@@ -29,33 +27,8 @@ public class Token {
 		return type;
 	}
 
-	private static boolean in(String str, String... target) {
-		for (String string : target) {
-			if (str.equals(string)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static Token create(String str, int start) {
-		char c = str.charAt(0);
-		TokenType tmpType = TokenType.KEYWORD;
-		if (c == QUOTE) {
-			tmpType = TokenType.STRING;
-		} else if ('0' <= c && c <= '9') {
-			tmpType = TokenType.NUMBER;
-		} else if (in(str, "+", "-", "/", "*", "%", "=", "<", ">", ">=", "<=", "<>", "!=")) {
-			tmpType = TokenType.OPERATOR;
-		} else if (c == ',') {
-			tmpType = TokenType.COMMA;
-		}
-
-		return new Token(str, tmpType, start);
-	}
-
-	public static Token create(String str) {
-		return create(str, 0);
+	public static Token create(String str, int start, TokenType type) {
+		return new Token(str, type, start);
 	}
 
 	@Override

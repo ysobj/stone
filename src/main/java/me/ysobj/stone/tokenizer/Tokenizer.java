@@ -7,12 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.ysobj.stone.model.Token;
-
+import me.ysobj.stone.model.Token.TokenType;
 
 public class Tokenizer {
 	private Reader reader;
 	private int currentTokensStart = 0;
 	private List<Token> preReadTokens = new ArrayList<>();
+	private List<String> keywords = new ArrayList<>();
 
 	private int preRead = -1;
 
@@ -152,9 +153,33 @@ public class Tokenizer {
 	}
 
 	protected Token createToken(String str, int readLength) {
-		Token t = Token.create(str, this.currentTokensStart);
+		Token t = Token.create(str, this.currentTokensStart, resolveTokenType(str));
 		this.currentTokensStart += readLength;
 		return t;
+	}
+
+	protected TokenType resolveTokenType(String str) {
+		char c = str.charAt(0);
+		TokenType tmpType = TokenType.KEYWORD;
+		if (c == QUOTE) {
+			tmpType = TokenType.STRING;
+		} else if ('0' <= c && c <= '9') {
+			tmpType = TokenType.NUMBER;
+		} else if (in(str, "+", "-", "/", "*", "%", "=", "<", ">", ">=", "<=", "<>", "!=")) {
+			tmpType = TokenType.OPERATOR;
+		} else if (c == ',') {
+			tmpType = TokenType.COMMA;
+		}
+		return tmpType;
+	}
+
+	private static boolean in(String str, String... target) {
+		for (String string : target) {
+			if (str.equals(string)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void push(Token token) {
