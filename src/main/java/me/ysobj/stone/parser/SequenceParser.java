@@ -18,17 +18,24 @@ public class SequenceParser implements Parser {
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		boolean accept = false;
-		for (Parser parser : parsers) {
+		ASTNode[] children = new ASTNode[parsers.length];
+		for (int i = 0; i < parsers.length ; i++) {
+			Parser parser = parsers[i];
 			ASTNode tmp = parser.parse(tokenizer);
 			if (tmp != null) {
 				accept = true;
+				children[i] = tmp;
 			}
 		}
 		if (accept) {
-			return new ASTNode();
+			return build(children);
 		} else {
 			throw new ParseException();
 		}
+	}
+	
+	protected ASTNode build(ASTNode[] children) {
+		return new ASTNode();
 	}
 
 	@Override

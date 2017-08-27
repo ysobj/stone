@@ -1,9 +1,9 @@
 package me.ysobj.stone.model;
 
 public class Assign extends ASTNode{
-	private Name name;
+	private Identifier name;
 	private ASTNode right;
-	public Assign(Name name, ASTNode right) {
+	public Assign(Identifier name, ASTNode right) {
 		this.name = name;
 		this.right = right;
 	}

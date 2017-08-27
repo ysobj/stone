@@ -12,7 +12,7 @@ public class AssignTest {
 	@Test
 	public void test() {
 		Context context = new Context();
-		Name name = new Name(new Tokenizer("hoge").next());
+		Identifier name = new Identifier(new Tokenizer("hoge").next());
 		ASTNode val = new NumberLiteral(new Tokenizer("123").next());
 		new Assign(name,val).evaluate(context);
 		assertThat(context.get("hoge"), is(123L));

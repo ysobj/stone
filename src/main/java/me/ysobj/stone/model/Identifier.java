@@ -2,10 +2,10 @@ package me.ysobj.stone.model;
 
 import me.ysobj.stone.exception.VariableNotFoundException;
 
-public class Name extends ASTNode {
+public class Identifier extends ASTNode {
 	private Token token;
 
-	public Name(Token t) {
+	public Identifier(Token t) {
 		token = t;
 	}
 
