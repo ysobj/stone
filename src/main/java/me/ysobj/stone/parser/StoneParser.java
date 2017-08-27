@@ -2,8 +2,11 @@ package me.ysobj.stone.parser;
 
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
+import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.Assign;
+import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.Identifier;
+import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class StoneParser implements Parser {
@@ -12,14 +15,16 @@ public class StoneParser implements Parser {
 	public StoneParser() {
 		Parser factor = new ChoiceParser(new NumberParser(), new StringParser(), new IdentifierParser());
 		Parser operator = new OperatorParser();
-		Parser expression = new SequenceParser(factor, new OptionalParser(new SequenceParser(operator, factor))) {
+		Parser expressionOption = new OptionalParser(new SequenceParser(operator, factor));
+		Parser expression = new SequenceParser(factor, expressionOption) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				if (children[1] == null) {
 					return children[0];
 				}
-				return super.build(children);
+				ASTNodeList list = (ASTNodeList)children[1];
+				return new BinaryExpression(children[0], new MultiplyOperator(), list.getNodes()[1]);
 			}
 
 		};

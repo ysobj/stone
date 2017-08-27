@@ -5,8 +5,8 @@ import java.util.StringJoiner;
 
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
+import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.tokenizer.Tokenizer;
-
 
 public class SequenceParser implements Parser {
 	private Parser[] parsers;
@@ -19,7 +19,7 @@ public class SequenceParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		boolean accept = false;
 		ASTNode[] children = new ASTNode[parsers.length];
-		for (int i = 0; i < parsers.length ; i++) {
+		for (int i = 0; i < parsers.length; i++) {
 			Parser parser = parsers[i];
 			ASTNode tmp = parser.parse(tokenizer);
 			if (tmp != null) {
@@ -33,9 +33,9 @@ public class SequenceParser implements Parser {
 			throw new ParseException();
 		}
 	}
-	
+
 	protected ASTNode build(ASTNode[] children) {
-		return new ASTNode();
+		return new ASTNodeList(children);
 	}
 
 	@Override
