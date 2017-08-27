@@ -13,7 +13,8 @@ public class Tokenizer {
 	private Reader reader;
 	private int currentTokensStart = 0;
 	private List<Token> preReadTokens = new ArrayList<>();
-	private List<String> keywords = new ArrayList<>();
+	private String[] operators;
+	private String[] keywords;
 
 	private int preRead = -1;
 
@@ -26,7 +27,13 @@ public class Tokenizer {
 	private static final int COMMA = (int) ',';
 
 	public Tokenizer(String string) {
+		this(string, new String[] {}, new String[] {});
+	}
+
+	public Tokenizer(String string, String[] operators, String[] keywords) {
 		this.reader = new StringReader(string);
+		this.operators = operators;
+		this.keywords = keywords;
 	}
 
 	public Tokenizer(Reader reader) {
@@ -160,20 +167,24 @@ public class Tokenizer {
 
 	protected TokenType resolveTokenType(String str) {
 		char c = str.charAt(0);
-		TokenType tmpType = TokenType.KEYWORD;
+		TokenType tmpType = TokenType.IDENTIFIER;
 		if (c == QUOTE) {
 			tmpType = TokenType.STRING;
 		} else if ('0' <= c && c <= '9') {
 			tmpType = TokenType.NUMBER;
-		} else if (in(str, "+", "-", "/", "*", "%", "=", "<", ">", ">=", "<=", "<>", "!=")) {
+		} else if (in(str, operators)) {
+			// } else if (in(str, "+", "-", "/", "*", "%", "=", "<", ">", ">=", "<=", "<>",
+			// "!=")) {
 			tmpType = TokenType.OPERATOR;
+		} else if (in(str, keywords)) {
+			tmpType = TokenType.KEYWORD;
 		} else if (c == ',') {
 			tmpType = TokenType.COMMA;
 		}
 		return tmpType;
 	}
 
-	private static boolean in(String str, String... target) {
+	private static boolean in(String str, String[] target) {
 		for (String string : target) {
 			if (str.equals(string)) {
 				return true;
