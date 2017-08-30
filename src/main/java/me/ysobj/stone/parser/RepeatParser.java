@@ -6,8 +6,12 @@
  */
 package me.ysobj.stone.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
+import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 /**
@@ -39,14 +43,15 @@ public class RepeatParser implements Parser {
 	 */
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
-		parser.parse(tokenizer);
+		List<ASTNode> nodes = new ArrayList<>();
+		nodes.add(parser.parse(tokenizer));
 		try {
 			while (true) {
-				parser.parse(tokenizer);
+				nodes.add(parser.parse(tokenizer));
 			}
 		} catch (ParseException e) {
 		}
-		return new ASTNode();
+		return new ASTNodeList(nodes.toArray(new ASTNode[] {}));
 	}
 
 	@Override

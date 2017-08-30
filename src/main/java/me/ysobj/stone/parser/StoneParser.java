@@ -39,7 +39,12 @@ public class StoneParser implements Parser {
 			}
 
 		};
-		parser = new SequenceParser(assign, new OptionalParser(new RepeatParser(assign)));
+		parser = new SequenceParser(assign, new OptionalParser(new RepeatParser(assign))) {
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new ASTNodeList(children);
+			}
+		};
 
 	}
 
