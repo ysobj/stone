@@ -78,7 +78,7 @@ public class StoneParserTest {
 	}
 
 	protected Tokenizer createTokenizer(String str) {
-		return new Tokenizer(str, new String[] { "+", "-", "*", "/" }, new String[] { "=" });
+		return new Tokenizer(str, new String[] { "+", "-", "*", "/", "=" }, new String[] {});
 	}
 
 }

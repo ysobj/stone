@@ -6,7 +6,6 @@ import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.Assign;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.Identifier;
-import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.model.Operator;
 import me.ysobj.stone.model.OperatorNode;
 import me.ysobj.stone.tokenizer.Tokenizer;
@@ -31,15 +30,15 @@ public class StoneParser implements Parser {
 			}
 
 		};
-		Parser assign = new SequenceParser(new IdentifierParser(), new KeywordParser("="), expression) {
-
-			@Override
-			protected ASTNode build(ASTNode[] children) {
-				return new Assign((Identifier) children[0], children[2]);
-			}
-
-		};
-		parser = new SequenceParser(assign, new OptionalParser(new RepeatParser(assign))) {
+//		Parser assign = new SequenceParser(new IdentifierParser(), new KeywordParser("="), expression) {
+//
+//			@Override
+//			protected ASTNode build(ASTNode[] children) {
+//				return new Assign((Identifier) children[0], children[2]);
+//			}
+//
+//		};
+		parser = new SequenceParser(expression, new OptionalParser(new RepeatParser(expression))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				return new ASTNodeList(children);

@@ -18,6 +18,9 @@ public class OperatorNode extends ASTNode {
 		case "/":
 			this.operator = new DivideOperator();
 			break;
+		case "=":
+			this.operator = new SubstituteOperator();
+			break;
 		}
 	}
 
