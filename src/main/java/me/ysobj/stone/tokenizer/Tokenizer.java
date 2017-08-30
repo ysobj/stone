@@ -128,13 +128,6 @@ public class Tokenizer {
 					} else {
 						return createToken(String.valueOf((char) r), readLength);
 					}
-				case TERMINATOR:
-					if (sb.length() > 0) {
-						this.preRead = -1;
-						return createToken(sb.toString(), readLength);
-					} else {
-						return createToken(String.valueOf((char) r), readLength);
-					}
 				case QUOTE:
 					isOpen = !isOpen;
 					break;
@@ -145,6 +138,7 @@ public class Tokenizer {
 					this.preReadTokens.add(Token.EOF);
 					return Token.EOF;
 				case SPACE:
+				case TERMINATOR:
 					if (!isOpen && sb.length() > 0) {
 						return createToken(sb.toString(), readLength);
 					} else if (isOpen) {

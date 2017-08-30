@@ -71,7 +71,7 @@ public class StoneParserTest {
 	public void test7() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123; fuga = hoge + 'xxx'"));
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 ; fuga = hoge + 'xxx'"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(123L));
 		assertThat(context.get("fuga"), is("123xxx"));
