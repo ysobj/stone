@@ -57,6 +57,26 @@ public class StoneParserTest {
 		assertThat(context.get("fuga"), is(738L));
 	}
 
+	@Test
+	public void test6() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 111 * 2; fuga = hoge * 2; fuga = fuga * 2;"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(222L));
+		assertThat(context.get("fuga"), is(888L));
+	}
+
+	@Test
+	public void test7() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 123; fuga = hoge + 'xxx'"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(123L));
+		assertThat(context.get("fuga"), is("123xxx"));
+	}
+
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str, new String[] { "+", "-", "*", "/" }, new String[] { "=" });
 	}
