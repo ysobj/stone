@@ -27,5 +27,9 @@ public class OperatorNode extends ASTNode {
 	public Operator getOperator() {
 		return operator;
 	}
-	
+
+	@Override
+	public String toString() {
+		return this.operator.toString();
+	}
 }

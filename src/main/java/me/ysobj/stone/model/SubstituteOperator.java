@@ -9,4 +9,14 @@ public class SubstituteOperator implements Operator {
 		return Void.VOID;
 	}
 
+	@Override
+	public String toString() {
+		return "=";
+	}
+
+	@Override
+	public int order() {
+		return 0;
+	}
+
 }

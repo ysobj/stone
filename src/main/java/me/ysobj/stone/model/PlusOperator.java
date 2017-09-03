@@ -27,4 +27,14 @@ public class PlusOperator implements Operator {
 		return a.longValue() + b.longValue();
 	}
 
+	@Override
+	public String toString() {
+		return "+";
+	}
+
+	@Override
+	public int order() {
+		return 1;
+	}
+
 }

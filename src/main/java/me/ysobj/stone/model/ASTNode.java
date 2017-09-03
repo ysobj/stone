@@ -14,4 +14,14 @@ public class ASTNode {
 	public Object evaluate(Context context) {
 		return token.getOriginal();
 	}
+
+	@Override
+	public String toString() {
+		if(token!=null) {
+			return token.toString();
+		}
+		return "";
+	}
+	
+	
 }
