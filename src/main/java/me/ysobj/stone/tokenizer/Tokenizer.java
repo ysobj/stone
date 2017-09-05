@@ -187,8 +187,10 @@ public class Tokenizer {
 			tmpType = TokenType.KEYWORD;
 		} else if (c == ',') {
 			tmpType = TokenType.COMMA;
-		} else if (c == PAREN_OPEN || c== PAREN_CLOSE) {
-			tmpType = TokenType.PAREN;
+		} else if (c == PAREN_OPEN) {
+			tmpType = TokenType.PAREN_OPEN;
+		} else if (c == PAREN_CLOSE) {
+			tmpType = TokenType.PAREN_CLOSE;
 		}
 		return tmpType;
 	}

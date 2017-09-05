@@ -361,7 +361,7 @@ public class TokenizerTest {
 		assertThat(tmp.getType(), is(TokenType.OPERATOR));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("("));
-		assertThat(tmp.getType(), is(TokenType.PAREN));
+		assertThat(tmp.getType(), is(TokenType.PAREN_OPEN));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("123"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
@@ -373,6 +373,6 @@ public class TokenizerTest {
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is(")"));
-		assertThat(tmp.getType(), is(TokenType.PAREN));
+		assertThat(tmp.getType(), is(TokenType.PAREN_CLOSE));
 	}
 }

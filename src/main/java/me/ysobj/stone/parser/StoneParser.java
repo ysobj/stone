@@ -16,7 +16,9 @@ public class StoneParser implements Parser {
 	Parser parser;
 
 	public StoneParser() {
-		Parser factor = new ChoiceParser(new NumberParser(), new StringParser(), new IdentifierParser());
+		ParenthesesParser parenthesesExp = new ParenthesesParser();
+		Parser factor = new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(),
+				new IdentifierParser());
 		Parser operator = new OperatorParser();
 		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
 		Parser expression = new SequenceParser(factor, expressionOption) {
@@ -77,6 +79,7 @@ public class StoneParser implements Parser {
 				return left.order() < right.order();
 			}
 		};
+		parenthesesExp.setParser(expression);
 		parser = new SequenceParser(expression, new OptionalParser(new RepeatParser(expression))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -91,7 +94,7 @@ public class StoneParser implements Parser {
 		return this.parser.parse(tokenizer);
 	}
 
-	// factor := NUMBER | STRING | IDENTIFIER
+	// factor := "(" expression ")"| NUMBER | STRING | IDENTIFIER
 	// expression := factor [OPERATOR factor]*
 	// code := expression [TERMINATER expression]*
 }
