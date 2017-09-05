@@ -28,6 +28,10 @@ public class Tokenizer {
 
 	private static final int TERMINATOR = (int) ';';
 
+	private static final int PAREN_OPEN = (int) '(';
+
+	private static final int PAREN_CLOSE = (int) ')';
+
 	public Tokenizer(String string) {
 		this(string, new String[] {}, new String[] {});
 	}
@@ -122,6 +126,8 @@ public class Tokenizer {
 					}
 					break;
 				case COMMA:
+				case PAREN_OPEN:
+				case PAREN_CLOSE:
 					if (sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
@@ -176,13 +182,13 @@ public class Tokenizer {
 		} else if ('0' <= c && c <= '9') {
 			tmpType = TokenType.NUMBER;
 		} else if (in(str, operators)) {
-			// } else if (in(str, "+", "-", "/", "*", "%", "=", "<", ">", ">=", "<=", "<>",
-			// "!=")) {
 			tmpType = TokenType.OPERATOR;
 		} else if (in(str, keywords)) {
 			tmpType = TokenType.KEYWORD;
 		} else if (c == ',') {
 			tmpType = TokenType.COMMA;
+		} else if (c == PAREN_OPEN || c== PAREN_CLOSE) {
+			tmpType = TokenType.PAREN;
 		}
 		return tmpType;
 	}

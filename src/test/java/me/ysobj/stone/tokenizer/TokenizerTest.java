@@ -349,4 +349,30 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("246"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 	}
+	
+	@Test
+	public void testParen() {
+		Tokenizer tokenizer = createTokenizer("hoge = (123 + 456)");
+		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("hoge"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("("));
+		assertThat(tmp.getType(), is(TokenType.PAREN));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("123"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("+"));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("456"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is(")"));
+		assertThat(tmp.getType(), is(TokenType.PAREN));
+	}
 }
