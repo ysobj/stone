@@ -3,7 +3,7 @@ package me.ysobj.stone.model;
 public class Token {
 
 	public static enum TokenType {
-		KEYWORD, IDENTIFIER, STRING, NUMBER, OPERATOR, COMMA, PAREN_OPEN, PAREN_CLOSE, OTHER
+		KEYWORD, IDENTIFIER, STRING, NUMBER, OPERATOR, COMMA, PAREN_OPEN, PAREN_CLOSE, BRACE_OPEN, BRACE_CLOSE, TERMINATOR, OTHER
 	}
 
 	public static final Token EOF = new Token("", TokenType.OTHER, 0);

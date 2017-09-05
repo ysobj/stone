@@ -26,11 +26,17 @@ public class Tokenizer {
 
 	private static final int COMMA = (int) ',';
 
-	private static final int TERMINATOR = (int) ';';
+	private static final int SEMICOLON = (int) ';';
 
 	private static final int PAREN_OPEN = (int) '(';
 
 	private static final int PAREN_CLOSE = (int) ')';
+
+	private static final int BRACE_OPEN = (int) '{';
+
+	private static final int BRACE_CLOSE = (int) '}';
+
+	private static final int LF = (int) '\n';
 
 	public Tokenizer(String string) {
 		this(string, new String[] {}, new String[] {});
@@ -128,6 +134,8 @@ public class Tokenizer {
 				case COMMA:
 				case PAREN_OPEN:
 				case PAREN_CLOSE:
+				case BRACE_OPEN:
+				case BRACE_CLOSE:
 					if (sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
@@ -144,7 +152,8 @@ public class Tokenizer {
 					this.preReadTokens.add(Token.EOF);
 					return Token.EOF;
 				case SPACE:
-				case TERMINATOR:
+				case SEMICOLON:
+				case LF:
 					if (!isOpen && sb.length() > 0) {
 						return createToken(sb.toString(), readLength);
 					} else if (isOpen) {
@@ -191,6 +200,14 @@ public class Tokenizer {
 			tmpType = TokenType.PAREN_OPEN;
 		} else if (c == PAREN_CLOSE) {
 			tmpType = TokenType.PAREN_CLOSE;
+		} else if (c == BRACE_OPEN) {
+			tmpType = TokenType.BRACE_OPEN;
+		} else if (c == BRACE_CLOSE) {
+			tmpType = TokenType.BRACE_CLOSE;
+		} else if (c == SEMICOLON) {
+			tmpType = TokenType.TERMINATOR;
+		} else if (c == LF) {
+			tmpType = TokenType.TERMINATOR;
 		}
 		return tmpType;
 	}

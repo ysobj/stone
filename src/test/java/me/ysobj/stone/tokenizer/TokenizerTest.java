@@ -351,9 +351,12 @@ public class TokenizerTest {
 	}
 	
 	@Test
-	public void testParen() {
-		Tokenizer tokenizer = createTokenizer("hoge = (123 + 456)");
+	public void testParenAndBrace() {
+		Tokenizer tokenizer = createTokenizer("{hoge = (123 + 456)}");
 		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("{"));
+		assertThat(tmp.getType(), is(TokenType.BRACE_OPEN));
+		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("hoge"));
 		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
 		tmp = tokenizer.next();
@@ -374,5 +377,8 @@ public class TokenizerTest {
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is(")"));
 		assertThat(tmp.getType(), is(TokenType.PAREN_CLOSE));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("}"));
+		assertThat(tmp.getType(), is(TokenType.BRACE_CLOSE));
 	}
 }

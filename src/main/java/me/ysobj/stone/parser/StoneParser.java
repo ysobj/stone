@@ -10,16 +10,18 @@ import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.model.Operator;
 import me.ysobj.stone.model.PlusOperator;
 import me.ysobj.stone.model.SubstituteOperator;
+import me.ysobj.stone.parser.ParenthesesParser.BracketType;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class StoneParser implements Parser {
 	Parser parser;
 
 	public StoneParser() {
-		ParenthesesParser parenthesesExp = new ParenthesesParser();
+		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
 		Parser factor = new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(),
 				new IdentifierParser());
 		Parser operator = new OperatorParser();
+		Parser terminator = new TerminatorParser();
 		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
 		Parser expression = new SequenceParser(factor, expressionOption) {
 
@@ -80,7 +82,16 @@ public class StoneParser implements Parser {
 			}
 		};
 		parenthesesExp.setParser(expression);
-		parser = new SequenceParser(expression, new OptionalParser(new RepeatParser(expression))) {
+		Parser simple = expression;
+		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), expression /* ,block */);
+		Parser statement = new ChoiceParser(ifParser, simple);
+		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
+		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
+		block.setParser(new SequenceParser(statement, blockOption));
+		block.setParser(statement);
+		ifParser.add(block);
+		parser = new SequenceParser(statement,
+				new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				return new ASTNodeList(children);
@@ -96,5 +107,9 @@ public class StoneParser implements Parser {
 
 	// factor := "(" expression ")"| NUMBER | STRING | IDENTIFIER
 	// expression := factor [OPERATOR factor]*
-	// code := expression [TERMINATER expression]*
+	// block := "{" [ statement ] {TERMINATER [ statement ]} "}"
+	// simple := expression
+	// statement := "if" expression block
+	// | simple
+	// code := statement [TERMINATER statement]*
 }

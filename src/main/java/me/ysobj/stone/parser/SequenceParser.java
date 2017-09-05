@@ -46,4 +46,10 @@ public class SequenceParser implements Parser {
 		return joiner.toString();
 	}
 
+	public void add(Parser parser) {
+		Parser[] tmp = new Parser[this.parsers.length + 1];
+		System.arraycopy(this.parsers, 0, tmp, 0, this.parsers.length);
+		tmp[this.parsers.length] = parser;
+		this.parsers = tmp;
+	}
 }
