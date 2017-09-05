@@ -14,7 +14,7 @@ public class DivideOperator extends PlusOperator implements Operator {
 
 	@Override
 	public int order() {
-		return 1;
+		return 2;
 	}
 
 }

@@ -14,7 +14,7 @@ public class MultiplyOperator extends PlusOperator {
 
 	@Override
 	public int order() {
-		return 1;
+		return 2;
 	}
 
 }
