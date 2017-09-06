@@ -136,6 +136,8 @@ public class Tokenizer {
 				case PAREN_CLOSE:
 				case BRACE_OPEN:
 				case BRACE_CLOSE:
+				case SEMICOLON:
+				case LF:
 					if (sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
@@ -152,8 +154,6 @@ public class Tokenizer {
 					this.preReadTokens.add(Token.EOF);
 					return Token.EOF;
 				case SPACE:
-				case SEMICOLON:
-				case LF:
 					if (!isOpen && sb.length() > 0) {
 						return createToken(sb.toString(), readLength);
 					} else if (isOpen) {

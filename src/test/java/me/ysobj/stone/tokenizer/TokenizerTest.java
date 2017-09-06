@@ -317,6 +317,8 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("123"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 		tmp = tokenizer.next();
+		assertThat(tmp.getType(), is(TokenType.TERMINATOR));
+		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("fuga"));
 		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
 		tmp = tokenizer.next();
@@ -339,6 +341,8 @@ public class TokenizerTest {
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("123"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getType(), is(TokenType.TERMINATOR));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("fuga"));
 		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
