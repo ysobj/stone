@@ -5,6 +5,7 @@ import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.DivideOperator;
+import me.ysobj.stone.model.EquivalentOperator;
 import me.ysobj.stone.model.MinusOperator;
 import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.model.Operator;
@@ -55,6 +56,8 @@ public class StoneParser implements Parser {
 					return new DivideOperator();
 				case "=":
 					return new SubstituteOperator();
+				case "==":
+					return new EquivalentOperator();
 				}
 				return null;
 			}
@@ -88,7 +91,6 @@ public class StoneParser implements Parser {
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
 		block.setParser(new SequenceParser(statement, blockOption));
-		block.setParser(statement);
 		ifParser.add(block);
 		parser = new SequenceParser(statement,
 				new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)))) {
