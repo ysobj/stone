@@ -6,6 +6,7 @@ import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.DivideOperator;
 import me.ysobj.stone.model.EquivalentOperator;
+import me.ysobj.stone.model.IfNode;
 import me.ysobj.stone.model.MinusOperator;
 import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.model.Operator;
@@ -86,7 +87,14 @@ public class StoneParser implements Parser {
 		};
 		parenthesesExp.setParser(expression);
 		Parser simple = expression;
-		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), expression /* ,block */);
+		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), expression /* ,block */) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new IfNode(children[1], ((ASTNodeList) children[2]).getNodes()[0]);
+			}
+
+		};
 		Parser statement = new ChoiceParser(ifParser, simple);
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
