@@ -158,23 +158,13 @@ public class StoneParserTest {
 	public void test16() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser
-				.parse(createTokenizer("if a == 0 {b = 1;  c = 2;d = 3;}"));
-		System.out.println(astNode);
+		ASTNode astNode = parser.parse(createTokenizer("a = 2 < 0 ; b = 1 > 0; c = 1>= 2; d = 1>=1;"));
+		astNode.evaluate(context);
+		assertThat(context.get("a"), is(false));
+		assertThat(context.get("b"), is(true));
+		assertThat(context.get("c"), is(false));
+		assertThat(context.get("d"), is(true));
 	}
-
-	// @Test
-	// public void test16() throws ParseException {
-	// Parser parser = new StoneParser();
-	// Context context = new Context();
-	// ASTNode astNode = parser.parse(createTokenizer("a = 2 < 0 ; b = 1 > 0; c = 1
-	// >= 2; d = 1>=1;"));
-	// astNode.evaluate(context);
-	// assertThat(context.get("a"), is(false));
-	// assertThat(context.get("b"), is(true));
-	// assertThat(context.get("c"), is(false));
-	// assertThat(context.get("d"), is(true));
-	// }
 
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,

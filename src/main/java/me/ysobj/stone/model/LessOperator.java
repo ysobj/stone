@@ -32,7 +32,7 @@ public class LessOperator implements Operator {
 
 	@Override
 	public int order() {
-		return 0;
+		return 1;
 	}
 
 }

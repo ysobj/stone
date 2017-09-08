@@ -32,7 +32,7 @@ public class EquivalentOperator implements Operator {
 
 	@Override
 	public int order() {
-		return 0;
+		return 1;
 	}
 
 }
