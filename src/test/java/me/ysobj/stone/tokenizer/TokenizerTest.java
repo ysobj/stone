@@ -13,7 +13,8 @@ import me.ysobj.stone.model.Token.TokenType;
 public class TokenizerTest {
 
 	protected Tokenizer createTokenizer(String str) {
-		return new Tokenizer(str, new String[] { "*", "+", "=","==" }, new String[] { "select", "from" });
+		return new Tokenizer(str, new String[] { "*", "+", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
+				new String[] { "select", "from" });
 	}
 
 	@Test
@@ -353,7 +354,7 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("246"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 	}
-	
+
 	@Test
 	public void testParenAndBrace() {
 		Tokenizer tokenizer = createTokenizer("{hoge = (123 + 456)}");
@@ -385,8 +386,8 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("}"));
 		assertThat(tmp.getType(), is(TokenType.BRACE_CLOSE));
 	}
-	
-	@Test 
+
+	@Test
 	public void testEquivalentAndSubstitute() {
 		Tokenizer tokenizer = createTokenizer("hoge = 123 == 456");
 		Token tmp = tokenizer.next();
@@ -400,6 +401,26 @@ public class TokenizerTest {
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("=="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("456"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+	}
+
+	@Test
+	public void testLt() {
+		Tokenizer tokenizer = createTokenizer("hoge = 123<456");
+		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("hoge"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("123"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("<"));
 		assertThat(tmp.getType(), is(TokenType.OPERATOR));
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("456"));

@@ -6,6 +6,8 @@ public class OperatorNode extends ASTNode {
 	public OperatorNode(Token token) {
 		super(token);
 		switch (token.getOriginal()) {
+		// "+", "-", "*", "/", "=",
+		// "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||"
 		case "+":
 			this.operator = new PlusOperator();
 			break;
@@ -21,6 +23,32 @@ public class OperatorNode extends ASTNode {
 		case "=":
 			this.operator = new SubstituteOperator();
 			break;
+		case "==":
+			this.operator = new EquivalentOperator();
+			break;
+		case "<":
+			this.operator = new LessOperator();
+			break;
+		case ">":
+			this.operator = new GreaterOperator();
+			break;
+		case "<=":
+			this.operator = new LessOperator(true);
+			break;
+		case "!":
+			throw new UnsupportedOperationException("! is unsupported.");
+		case ">=":
+			this.operator = new GreaterOperator(true);
+			break;
+		case "!=":
+			this.operator = new EquivalentOperator(true);
+		case "&&":
+			throw new UnsupportedOperationException("&& is unsupported.");
+		case "||":
+			throw new UnsupportedOperationException("|| is unsupported.");
+		}
+		if(this.operator == null) {
+			throw new RuntimeException(token.getOriginal());
 		}
 	}
 

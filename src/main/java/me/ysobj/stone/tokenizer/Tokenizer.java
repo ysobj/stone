@@ -126,6 +126,8 @@ public class Tokenizer {
 				case '*':
 				case '/':
 				case '%':
+				case '<':
+				case '>':
 					if (isNumeric) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);

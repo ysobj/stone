@@ -1,5 +1,8 @@
 package me.ysobj.stone.parser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
@@ -10,8 +13,10 @@ import me.ysobj.stone.model.IfNode;
 import me.ysobj.stone.model.MinusOperator;
 import me.ysobj.stone.model.MultiplyOperator;
 import me.ysobj.stone.model.Operator;
+import me.ysobj.stone.model.OperatorNode;
 import me.ysobj.stone.model.PlusOperator;
 import me.ysobj.stone.model.SubstituteOperator;
+import me.ysobj.stone.model.WhileNode;
 import me.ysobj.stone.parser.ParenthesesParser.BracketType;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
@@ -44,31 +49,12 @@ public class StoneParser implements Parser {
 				return buildRecursively(tmp);
 			}
 
-			protected Operator convertOperator(ASTNode node) {
-				String tmp = node.evaluate(null).toString();
-				switch (tmp) {
-				case "*":
-					return new MultiplyOperator();
-				case "+":
-					return new PlusOperator();
-				case "-":
-					return new MinusOperator();
-				case "/":
-					return new DivideOperator();
-				case "=":
-					return new SubstituteOperator();
-				case "==":
-					return new EquivalentOperator();
-				}
-				return null;
-			}
-
 			protected ASTNode buildRecursively(ASTNode[] nodes) {
-				Operator left = convertOperator(nodes[1]);
+				OperatorNode left = (OperatorNode) nodes[1];
 				if (nodes.length == 3) {
 					return new BinaryExpression(nodes[0], left, nodes[2]);
 				}
-				Operator right = convertOperator(nodes[3]);
+				OperatorNode right = (OperatorNode) nodes[3];
 				if (isRight(left, right)) {
 					ASTNode[] tmp = new ASTNode[nodes.length - 2];
 					System.arraycopy(nodes, 2, tmp, 0, nodes.length - 2);
@@ -81,8 +67,8 @@ public class StoneParser implements Parser {
 				}
 			}
 
-			protected boolean isRight(Operator left, Operator right) {
-				return left.order() < right.order();
+			protected boolean isRight(OperatorNode left, OperatorNode right) {
+				return left.getOperator().order() < right.getOperator().order();
 			}
 		};
 		parenthesesExp.setParser(expression);
@@ -91,20 +77,46 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				return new IfNode(children[1], ((ASTNodeList) children[2]).getNodes()[0]);
+				return new IfNode(children[1], children[2]);
 			}
 
 		};
-		Parser statement = new ChoiceParser(ifParser, simple);
+		SequenceParser whileParser = new SequenceParser(new KeywordParser("while"), expression /* ,block */) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new WhileNode(children[1], children[2]);
+			}
+
+		};
+		Parser statement = new ChoiceParser(ifParser, whileParser, simple);
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
-		block.setParser(new SequenceParser(statement, blockOption));
+		block.setParser(new SequenceParser(statement, blockOption) {
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
+				List<ASTNode> tmp = new ArrayList<>();
+				tmp.add(children[0]);
+				for (ASTNode astNode : nodeArray) {
+					tmp.add(((ASTNodeList) astNode).getNodes()[1]);
+				}
+				return new ASTNodeList(tmp.toArray(new ASTNode[0]));
+			}
+		});
 		ifParser.add(block);
+		whileParser.add(block);
 		parser = new SequenceParser(statement,
 				new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				return new ASTNodeList(children);
+				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
+				List<ASTNode> tmp = new ArrayList<>();
+				tmp.add(children[0]);
+				for (ASTNode astNode : nodeArray) {
+					tmp.add(astNode);
+				}
+				return new ASTNodeList(tmp.toArray(new ASTNode[0]));
 			}
 		};
 
@@ -120,6 +132,7 @@ public class StoneParser implements Parser {
 	// block := "{" [ statement ] {TERMINATER [ statement ]} "}"
 	// simple := expression
 	// statement := "if" expression block
+	// | while expression block
 	// | simple
 	// code := statement [TERMINATER statement]*
 }

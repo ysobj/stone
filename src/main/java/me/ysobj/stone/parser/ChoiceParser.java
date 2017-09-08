@@ -7,7 +7,6 @@ import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
-
 public class ChoiceParser implements Parser {
 	private Parser[] parsers;
 
@@ -18,13 +17,9 @@ public class ChoiceParser implements Parser {
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		for (Parser parser : parsers) {
-			ASTNode tmp = null;
 			try {
-				tmp = parser.parse(tokenizer);
+				return parser.parse(tokenizer);
 			} catch (ParseException e) {
-			}
-			if (tmp != null) {
-				return tmp;
 			}
 		}
 		throw new ParseException();

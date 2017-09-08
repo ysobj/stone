@@ -12,7 +12,7 @@ public class BinaryExprTest {
 	public void testPlus() {
 		ASTNode left = new NumberLiteral(new Tokenizer("1").next());
 		ASTNode right = new NumberLiteral(new Tokenizer("2").next());
-		BinaryExpression x = new BinaryExpression(left, new PlusOperator(), right);
+		BinaryExpression x = new BinaryExpression(left, new OperatorNode(new Tokenizer("+").next()), right);
 		Number n = (Number) x.evaluate(new Context());
 		assertEquals(3, n.intValue());
 	}
@@ -21,7 +21,7 @@ public class BinaryExprTest {
 	public void testMinus() {
 		ASTNode left = new NumberLiteral(new Tokenizer("5").next());
 		ASTNode right = new NumberLiteral(new Tokenizer("3").next());
-		BinaryExpression x = new BinaryExpression(left, new MinusOperator(), right);
+		BinaryExpression x = new BinaryExpression(left, new OperatorNode(new Tokenizer("-").next()), right);
 		Number n = (Number) x.evaluate(new Context());
 		assertEquals(2, n.intValue());
 	}
@@ -30,7 +30,7 @@ public class BinaryExprTest {
 	public void testMultiply() {
 		ASTNode left = new NumberLiteral(new Tokenizer("5").next());
 		ASTNode right = new NumberLiteral(new Tokenizer("3").next());
-		BinaryExpression x = new BinaryExpression(left, new MultiplyOperator(), right);
+		BinaryExpression x = new BinaryExpression(left, new OperatorNode(new Tokenizer("*").next()), right);
 		Number n = (Number) x.evaluate(new Context());
 		assertEquals(15, n.intValue());
 	}
@@ -39,7 +39,7 @@ public class BinaryExprTest {
 	public void testDivide() {
 		ASTNode left = new NumberLiteral(new Tokenizer("6").next());
 		ASTNode right = new NumberLiteral(new Tokenizer("3").next());
-		BinaryExpression x = new BinaryExpression(left, new DivideOperator(), right);
+		BinaryExpression x = new BinaryExpression(left, new OperatorNode(new Tokenizer("/").next()), right);
 		Number n = (Number) x.evaluate(new Context());
 		assertEquals(2, n.intValue());
 	}

@@ -118,22 +118,68 @@ public class StoneParserTest {
 	public void test12() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; if hoge == 2 {hoge = 3 }"));
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
+		assertThat(context.get("fuga"), is(4L));
 	}
 
 	@Test
 	public void test13() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; if hoge == 3 {hoge = 3 }"));
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(2L));
+		assertThat(context.get("fuga"), is(3L));
 	}
 
+	@Test
+	public void test14() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("hoge = 0 ; hoge = hoge + 1; hoge = hoge + 2"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(3L));
+	}
+
+	@Test
+	public void test15() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser
+				.parse(createTokenizer("hoge = 0 ; fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(3L));
+		assertThat(context.get("fuga"), is(6L));
+	}
+
+	@Test
+	public void test16() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser
+				.parse(createTokenizer("if a == 0 {b = 1;  c = 2;d = 3;}"));
+		System.out.println(astNode);
+	}
+
+	// @Test
+	// public void test16() throws ParseException {
+	// Parser parser = new StoneParser();
+	// Context context = new Context();
+	// ASTNode astNode = parser.parse(createTokenizer("a = 2 < 0 ; b = 1 > 0; c = 1
+	// >= 2; d = 1>=1;"));
+	// astNode.evaluate(context);
+	// assertThat(context.get("a"), is(false));
+	// assertThat(context.get("b"), is(true));
+	// assertThat(context.get("c"), is(false));
+	// assertThat(context.get("d"), is(true));
+	// }
+
 	protected Tokenizer createTokenizer(String str) {
-		return new Tokenizer(str, new String[] { "+", "-", "*", "/", "=","==" }, new String[] {});
+		return new Tokenizer(str,
+				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
+				new String[] {});
 	}
 
 }

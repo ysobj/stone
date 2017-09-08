@@ -44,7 +44,6 @@ public class RepeatParser implements Parser {
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		List<ASTNode> nodes = new ArrayList<>();
-		nodes.add(parser.parse(tokenizer));
 		try {
 			while (true) {
 				nodes.add(parser.parse(tokenizer));
