@@ -7,15 +7,8 @@ import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
-import me.ysobj.stone.model.DivideOperator;
-import me.ysobj.stone.model.EquivalentOperator;
 import me.ysobj.stone.model.IfNode;
-import me.ysobj.stone.model.MinusOperator;
-import me.ysobj.stone.model.MultiplyOperator;
-import me.ysobj.stone.model.Operator;
 import me.ysobj.stone.model.OperatorNode;
-import me.ysobj.stone.model.PlusOperator;
-import me.ysobj.stone.model.SubstituteOperator;
 import me.ysobj.stone.model.WhileNode;
 import me.ysobj.stone.parser.ParenthesesParser.BracketType;
 import me.ysobj.stone.tokenizer.Tokenizer;
@@ -127,12 +120,17 @@ public class StoneParser implements Parser {
 		return this.parser.parse(tokenizer);
 	}
 
+	// param := IDENTIFIER
+	// params := param { "," param }
+	// param_list := "(" [params] ")"
+	// func := "func" IDENTIFIER param_list block
 	// factor := "(" expression ")"| NUMBER | STRING | IDENTIFIER
-	// expression := factor [OPERATOR factor]*
-	// block := "{" [ statement ] {TERMINATER [ statement ]} "}"
+	// expression := factor {OPERATOR factor}
+	// block := "{" [ statement ] {TERMINATOR [ statement ]} "}"
 	// simple := expression
 	// statement := "if" expression block
 	// | while expression block
 	// | simple
-	// code := statement [TERMINATER statement]*
+	// code := func | statement
+	// program := code {TERMINATOR code}
 }
