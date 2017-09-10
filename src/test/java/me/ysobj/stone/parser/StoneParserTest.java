@@ -166,6 +166,29 @@ public class StoneParserTest {
 		assertThat(context.get("d"), is(true));
 	}
 
+	@Test
+	public void test17() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser
+				.parse(createTokenizer("hoge = 0 ; if hoge < 1 {fuga = 2}"));
+		astNode.evaluate(context);
+		assertThat(context.get("hoge"), is(0L));
+		assertThat(context.get("fuga"), is(2L));
+	}
+
+	@Test
+	public void test18() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("a = 0; func hoge(){ a = a + 1 };"));
+		astNode.evaluate(context);
+//		assertThat(context.get("a"), is(false));
+//		assertThat(context.get("b"), is(true));
+//		assertThat(context.get("c"), is(false));
+//		assertThat(context.get("d"), is(true));
+	}
+
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },

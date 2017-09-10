@@ -17,6 +17,12 @@ public class StoneParser implements Parser {
 	Parser parser;
 
 	public StoneParser() {
+		Parser param = new IdentifierParser();
+		Parser paramsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), param)));
+		Parser params = new SequenceParser(param, paramsOption);
+		ParenthesesParser paramList = new ParenthesesParser(BracketType.PARENTHESIS);
+		paramList.setParser(new OptionalParser(params));
+		SequenceParser func = new SequenceParser(new KeywordParser("func"), new IdentifierParser(), paramList/*, block*/);
 		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
 		Parser factor = new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(),
 				new IdentifierParser());
@@ -99,8 +105,10 @@ public class StoneParser implements Parser {
 		});
 		ifParser.add(block);
 		whileParser.add(block);
-		parser = new SequenceParser(statement,
-				new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)))) {
+		func.add(block);
+		Parser code = new ChoiceParser(func, statement);
+		parser = new SequenceParser(code,
+				new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
@@ -119,12 +127,14 @@ public class StoneParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		return this.parser.parse(tokenizer);
 	}
-
+	// arg := factor
+	// args := factor { "," factor }
+	// arg_list := "(" [args] ")"
 	// param := IDENTIFIER
 	// params := param { "," param }
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
-	// factor := "(" expression ")"| NUMBER | STRING | IDENTIFIER
+	// factor := ( "(" expression ")"| NUMBER | STRING | IDENTIFIER ) { arg_list }
 	// expression := factor {OPERATOR factor}
 	// block := "{" [ statement ] {TERMINATOR [ statement ]} "}"
 	// simple := expression
