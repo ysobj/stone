@@ -181,12 +181,18 @@ public class StoneParserTest {
 	public void test18() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("a = 0; func hoge(){ a = a + 1 };"));
+		ASTNode astNode = parser.parse(createTokenizer("a = 0; func hoge(){ a = a + 1 }; hoge();"));
 		astNode.evaluate(context);
-//		assertThat(context.get("a"), is(false));
-//		assertThat(context.get("b"), is(true));
-//		assertThat(context.get("c"), is(false));
-//		assertThat(context.get("d"), is(true));
+		assertThat(context.get("a"), is(1L));
+	}
+
+	@Test
+	public void test19() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("a = 1; b = 2; c = 3; func hoge(x,y){ a = a + x }; hoge(b,c);"));
+		astNode.evaluate(context);
+		assertThat(context.get("a"), is(3L));
 	}
 
 	protected Tokenizer createTokenizer(String str) {

@@ -7,9 +7,14 @@ import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
+import me.ysobj.stone.model.CallFuncNode;
+import me.ysobj.stone.model.FuncNode;
 import me.ysobj.stone.model.IfNode;
 import me.ysobj.stone.model.OperatorNode;
+import me.ysobj.stone.model.ParamList;
+import me.ysobj.stone.model.Token;
 import me.ysobj.stone.model.WhileNode;
+import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.parser.ParenthesesParser.BracketType;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
@@ -21,11 +26,46 @@ public class StoneParser implements Parser {
 		Parser paramsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), param)));
 		Parser params = new SequenceParser(param, paramsOption);
 		ParenthesesParser paramList = new ParenthesesParser(BracketType.PARENTHESIS);
-		paramList.setParser(new OptionalParser(params));
-		SequenceParser func = new SequenceParser(new KeywordParser("func"), new IdentifierParser(), paramList/*, block*/);
+
+		paramList.setParser(new OptionalParser(params) {
+
+			@Override
+			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+				ParamList paramList = new ParamList();
+				// TODO Auto-generated method stub
+				while (tokenizer.hasNext()) {
+					Token token = tokenizer.peek();
+					if (token.getType() == Token.TokenType.IDENTIFIER) {
+						tokenizer.next();
+						paramList.add(new Identifier(token));
+					} else if (token.getType() == Token.TokenType.COMMA) {
+						tokenizer.next();
+					} else {
+						break;
+					}
+				}
+				return paramList;
+			}
+
+		});
+		SequenceParser func = new SequenceParser(new KeywordParser("func"), new IdentifierParser(),
+				paramList/* , block */) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new FuncNode((Identifier) children[1], (ParamList) children[2], children[3]);
+			}
+
+		};
 		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
-		Parser factor = new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(),
-				new IdentifierParser());
+		SequenceParser factor = new SequenceParser(
+				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), new IdentifierParser()));
+		Parser arg = factor;
+		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
+		Parser args = new SequenceParser(arg, argsOption);
+		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS);
+		argList.setParser(args);
+		factor.add(new OptionalParser(argList));
 		Parser operator = new OperatorParser();
 		Parser terminator = new TerminatorParser();
 		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
@@ -49,6 +89,10 @@ public class StoneParser implements Parser {
 			}
 
 			protected ASTNode buildRecursively(ASTNode[] nodes) {
+				if (nodes.length == 1) {
+					Identifier idetifier = (Identifier) ((ASTNodeList) nodes[0]).getNodes()[0];
+					return new CallFuncNode(idetifier);
+				}
 				OperatorNode left = (OperatorNode) nodes[1];
 				if (nodes.length == 3) {
 					return new BinaryExpression(nodes[0], left, nodes[2]);
@@ -107,8 +151,7 @@ public class StoneParser implements Parser {
 		whileParser.add(block);
 		func.add(block);
 		Parser code = new ChoiceParser(func, statement);
-		parser = new SequenceParser(code,
-				new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
+		parser = new SequenceParser(code, new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
@@ -128,7 +171,7 @@ public class StoneParser implements Parser {
 		return this.parser.parse(tokenizer);
 	}
 	// arg := factor
-	// args := factor { "," factor }
+	// args := arg { "," arg }
 	// arg_list := "(" [args] ")"
 	// param := IDENTIFIER
 	// params := param { "," param }
