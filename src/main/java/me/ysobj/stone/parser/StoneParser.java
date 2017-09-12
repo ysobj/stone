@@ -62,7 +62,25 @@ public class StoneParser implements Parser {
 				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), new IdentifierParser()));
 		Parser arg = factor;
 		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
-		Parser args = new SequenceParser(arg, argsOption);
+		Parser args = new SequenceParser(arg, argsOption) {
+			@Override
+			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+				ASTNodeList argList = new ASTNodeList();
+				// TODO Auto-generated method stub
+				while (tokenizer.hasNext()) {
+					Token token = tokenizer.peek();
+					if (token.getType() == Token.TokenType.IDENTIFIER) {
+						tokenizer.next();
+						argList.add(new Identifier(token));
+					} else if (token.getType() == Token.TokenType.COMMA) {
+						tokenizer.next();
+					} else {
+						break;
+					}
+				}
+				return argList;
+			}
+		};
 		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS);
 		argList.setParser(args);
 		factor.add(new OptionalParser(argList));
@@ -91,7 +109,8 @@ public class StoneParser implements Parser {
 			protected ASTNode buildRecursively(ASTNode[] nodes) {
 				if (nodes.length == 1) {
 					Identifier idetifier = (Identifier) ((ASTNodeList) nodes[0]).getNodes()[0];
-					return new CallFuncNode(idetifier);
+					ASTNodeList args = (ASTNodeList) ((ASTNodeList) nodes[0]).getNodes()[1];
+					return new CallFuncNode(idetifier, args);
 				}
 				OperatorNode left = (OperatorNode) nodes[1];
 				if (nodes.length == 3) {
