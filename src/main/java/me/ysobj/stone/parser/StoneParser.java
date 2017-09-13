@@ -151,7 +151,9 @@ public class StoneParser implements Parser {
 			}
 
 		};
-		Parser statement = new ChoiceParser(ifParser, whileParser, simple);
+		SequenceParser varParser = new SequenceParser(new KeywordParser("var"), new IdentifierParser(),
+				new OperatorParser("="), expression);
+		Parser statement = new ChoiceParser(ifParser, whileParser, simple, varParser);
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
 		block.setParser(new SequenceParser(statement, blockOption) {
@@ -203,6 +205,7 @@ public class StoneParser implements Parser {
 	// statement := "if" expression block
 	// | while expression block
 	// | simple
+	// | "var" IDENTIFIER OPERATOR expression
 	// code := func | statement
 	// program := code {TERMINATOR code}
 }
