@@ -2,8 +2,12 @@ package me.ysobj.stone.model;
 
 public class OperatorNode extends ASTNode {
 	private Operator operator;
-
+	
 	public OperatorNode(Token token) {
+		this(token,false);
+	}
+
+	public OperatorNode(Token token, boolean inVarContext) {
 		super(token);
 		switch (token.getOriginal()) {
 		// "+", "-", "*", "/", "=",
@@ -21,7 +25,7 @@ public class OperatorNode extends ASTNode {
 			this.operator = new DivideOperator();
 			break;
 		case "=":
-			this.operator = new SubstituteOperator();
+			this.operator = new SubstituteOperator(inVarContext);
 			break;
 		case "==":
 			this.operator = new EquivalentOperator();

@@ -8,4 +8,9 @@ public class VariableNotFoundException extends RuntimeException {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("Variable %s is not found.", this.name);
+	}
+
 }

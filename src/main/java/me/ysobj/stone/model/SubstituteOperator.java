@@ -1,12 +1,33 @@
 package me.ysobj.stone.model;
 
+import me.ysobj.stone.exception.VariableNotFoundException;
+
 public class SubstituteOperator implements Operator {
+	private boolean inVarContext;
+
+	public SubstituteOperator(boolean inVarContext) {
+		this.inVarContext = inVarContext;
+	}
 
 	@Override
 	public Object evaluate(Context context, ASTNode... astnode) {
-		Identifier identifier = (Identifier) ((ASTNodeList)astnode[0]).getNodes()[0];
+		Identifier identifier = extract(astnode[0]);
+		if(!inVarContext) {
+			if(!context.has(identifier.getName())) {
+				throw new VariableNotFoundException(identifier.getName());
+			}
+		}
 		context.put(identifier.getName(), astnode[1].evaluate(context));
 		return Void.VOID;
+	}
+	
+	protected Identifier extract(ASTNode node) {
+		if(node instanceof Identifier) {
+			return (Identifier)node;
+		}else if(node instanceof ASTNodeList) {
+			return extract(((ASTNodeList)node).getNodes()[0]);
+		}
+		throw new RuntimeException();
 	}
 
 	@Override

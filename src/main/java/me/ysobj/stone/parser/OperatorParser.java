@@ -9,12 +9,18 @@ import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class OperatorParser implements Parser {
 	private String operator;
+	private boolean inVarContext;
 
 	public OperatorParser() {
 	}
 
 	public OperatorParser(String operator) {
 		this.operator = operator;
+	}
+
+	public OperatorParser(String operator, boolean inVarContext) {
+		this.operator = operator;
+		this.inVarContext = inVarContext;
 	}
 
 	@Override
@@ -25,7 +31,7 @@ public class OperatorParser implements Parser {
 		}
 		if (match(token)) {
 			tokenizer.next();
-			return new OperatorNode(token);
+			return new OperatorNode(token, inVarContext);
 		}
 		throw new ParseException();
 	}

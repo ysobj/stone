@@ -3,6 +3,8 @@ package me.ysobj.stone.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.RuntimeErrorException;
+
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
@@ -108,8 +110,12 @@ public class StoneParser implements Parser {
 
 			protected ASTNode buildRecursively(ASTNode[] nodes) {
 				if (nodes.length == 1) {
-					Identifier idetifier = (Identifier) ((ASTNodeList) nodes[0]).getNodes()[0];
-					ASTNodeList args = (ASTNodeList) ((ASTNodeList) nodes[0]).getNodes()[1];
+					ASTNodeList nodeList = (ASTNodeList) nodes[0];
+					if (nodeList.getNodes().length == 2 && nodeList.getNodes()[1] == null) {
+						return nodeList.getNodes()[0];
+					}
+					Identifier idetifier = (Identifier) nodeList.getNodes()[0];
+					ASTNodeList args = (ASTNodeList) nodeList.getNodes()[1];
 					return new CallFuncNode(idetifier, args);
 				}
 				OperatorNode left = (OperatorNode) nodes[1];
@@ -152,8 +158,15 @@ public class StoneParser implements Parser {
 
 		};
 		SequenceParser varParser = new SequenceParser(new KeywordParser("var"), new IdentifierParser(),
-				new OperatorParser("="), expression);
-		Parser statement = new ChoiceParser(ifParser, whileParser, simple, varParser);
+				new OperatorParser("=", true), expression) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new BinaryExpression(children[1], (OperatorNode) children[2], children[3]);
+			}
+
+		};
+		Parser statement = new ChoiceParser(ifParser, whileParser, varParser, simple);
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
 		block.setParser(new SequenceParser(statement, blockOption) {
@@ -204,8 +217,8 @@ public class StoneParser implements Parser {
 	// simple := expression
 	// statement := "if" expression block
 	// | while expression block
-	// | simple
 	// | "var" IDENTIFIER OPERATOR expression
+	// | simple
 	// code := func | statement
 	// program := code {TERMINATOR code}
 }

@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import org.junit.Test;
 
 import me.ysobj.stone.exception.ParseException;
+import me.ysobj.stone.exception.VariableNotFoundException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.Context;
 import me.ysobj.stone.tokenizer.Tokenizer;
@@ -15,7 +16,7 @@ public class StoneParserTest {
 	public void test1() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(123L));
 	}
@@ -24,7 +25,7 @@ public class StoneParserTest {
 	public void test2() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 * 2"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 * 2"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(246L));
 	}
@@ -33,7 +34,7 @@ public class StoneParserTest {
 	public void test3() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 - 3 + 1"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 - 3 + 1"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(121L));
 	}
@@ -42,7 +43,7 @@ public class StoneParserTest {
 	public void test4() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 'abc'"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 'abc'"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is("abc"));
 	}
@@ -51,7 +52,7 @@ public class StoneParserTest {
 	public void test5() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 * 2; fuga = hoge * 3"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 * 2; var fuga = hoge * 3"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(246L));
 		assertThat(context.get("fuga"), is(738L));
@@ -61,7 +62,7 @@ public class StoneParserTest {
 	public void test6() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 111 * 2; fuga = hoge * 2; fuga = fuga * 2;"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 111 * 2; var fuga = hoge * 2; fuga = fuga * 2;"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(222L));
 		assertThat(context.get("fuga"), is(888L));
@@ -71,7 +72,7 @@ public class StoneParserTest {
 	public void test7() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 ; fuga = hoge + 'xxx'"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 ; var fuga = hoge + 'xxx'"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(123L));
 		assertThat(context.get("fuga"), is("123xxx"));
@@ -81,7 +82,7 @@ public class StoneParserTest {
 	public void test8() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 ; fuga = 'xxx'"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 ; var fuga = 'xxx'"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(123L));
 		assertThat(context.get("fuga"), is("xxx"));
@@ -91,7 +92,7 @@ public class StoneParserTest {
 	public void test9() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 123 + 2 * 4"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 + 2 * 4"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(131L));
 	}
@@ -100,7 +101,7 @@ public class StoneParserTest {
 	public void test10() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = (123 + 2) * 4"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = (123 + 2) * 4"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(500L));
 	}
@@ -109,7 +110,7 @@ public class StoneParserTest {
 	public void test11() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = (123 + (2 * 4))"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = (123 + (2 * 4))"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(131L));
 	}
@@ -118,7 +119,7 @@ public class StoneParserTest {
 	public void test12() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 2 ; var fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(4L));
@@ -128,7 +129,7 @@ public class StoneParserTest {
 	public void test13() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 2 ; fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 2 ; var   fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(2L));
 		assertThat(context.get("fuga"), is(3L));
@@ -138,7 +139,7 @@ public class StoneParserTest {
 	public void test14() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("hoge = 0 ; hoge = hoge + 1; hoge = hoge + 2"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 0 ; hoge = hoge + 1; hoge = hoge + 2"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 	}
@@ -148,7 +149,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser
-				.parse(createTokenizer("hoge = 0 ; fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
+				.parse(createTokenizer("var hoge = 0 ;var fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(6L));
@@ -158,7 +159,7 @@ public class StoneParserTest {
 	public void test16() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("a = 2 < 0 ; b = 1 > 0; c = 1>= 2; d = 1>=1;"));
+		ASTNode astNode = parser.parse(createTokenizer("var a = 2 < 0 ; var b = 1 > 0; var c = 1>= 2;var d = 1>=1;"));
 		astNode.evaluate(context);
 		assertThat(context.get("a"), is(false));
 		assertThat(context.get("b"), is(true));
@@ -171,7 +172,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser
-				.parse(createTokenizer("hoge = 0 ; if hoge < 1 {fuga = 2}"));
+				.parse(createTokenizer("var hoge = 0 ; if hoge < 1 { var fuga = 2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(0L));
 		assertThat(context.get("fuga"), is(2L));
@@ -181,7 +182,7 @@ public class StoneParserTest {
 	public void test18() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("a = 0; func hoge(){ a = a + 1 }; hoge();"));
+		ASTNode astNode = parser.parse(createTokenizer("var a = 0; func hoge(){ a = a + 1 }; hoge();"));
 		astNode.evaluate(context);
 		assertThat(context.get("a"), is(1L));
 	}
@@ -190,15 +191,22 @@ public class StoneParserTest {
 	public void test19() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("a = 1; b = 2; c = 3; func hoge(x,y){ a = a + x }; hoge(b,c);"));
+		ASTNode astNode = parser.parse(createTokenizer("var a = 1; var b = 2; var c = 3; func hoge(x,y){ a = a + x }; hoge(b,c);"));
 		astNode.evaluate(context);
 		assertThat(context.get("a"), is(3L));
 	}
 
+	@Test(expected=VariableNotFoundException.class)
+	public void test20() throws ParseException {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("a = 3"));
+		astNode.evaluate(context);
+	}
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] {});
+				new String[] {"if","while","func","var"});
 	}
 
 }
