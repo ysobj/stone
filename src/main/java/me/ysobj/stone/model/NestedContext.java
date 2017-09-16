@@ -1,11 +1,9 @@
 package me.ysobj.stone.model;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class NestedContext extends Context {
-	private Map<String, Object> env;
-	private Context context;
+	protected Context context;
 
 	public NestedContext(Context context) {
 		this.context = context;
@@ -36,5 +34,10 @@ public class NestedContext extends Context {
 
 	public void putNew(String name, Object value) {
 		env.put(name, value);
+	}
+
+	@Override
+	public String toString() {
+		return "NestedContext [env=" + env + ", context=" + context + "]";
 	}
 }

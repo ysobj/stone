@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Context {
-	Map<String, Object> env;
+	protected Map<String, Object> env;
 	public Context() {
 		env = new HashMap<>();
 	}
@@ -19,6 +19,11 @@ public class Context {
 
 	public void put(String name, Object value) {
 		env.put(name, value);
+	}
+
+	@Override
+	public String toString() {
+		return "Context [env=" + env + "]";
 	}
 
 }

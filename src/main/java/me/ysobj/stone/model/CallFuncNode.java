@@ -18,7 +18,7 @@ public class CallFuncNode extends ASTNode {
 		for (int i = 0; i < argArray.length; i++) {
 			ASTNode arg = argArray[i];
 			Identifier identifier = ids[i];
-			nestedContext.putNew(identifier.getName(), arg);
+			nestedContext.putNew(identifier.getName(), arg.evaluate(context));
 		}
 		return func.getBlock().evaluate(nestedContext);
 	}
