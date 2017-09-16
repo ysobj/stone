@@ -14,11 +14,11 @@ public class CallFuncNode extends ASTNode {
 		FuncNode func = (FuncNode)context.get(identifier.getName());
 		Identifier[] ids = func.getParamList().getNodes();
 		ASTNode[] argArray = args.nodes;
-		Context nestedContext = new NestedContext(context);
+		NestedContext nestedContext = new NestedContext(context);
 		for (int i = 0; i < argArray.length; i++) {
 			ASTNode arg = argArray[i];
 			Identifier identifier = ids[i];
-			nestedContext.put(identifier.getName(), arg);
+			nestedContext.putNew(identifier.getName(), arg);
 		}
 		return func.getBlock().evaluate(nestedContext);
 	}

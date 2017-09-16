@@ -27,6 +27,14 @@ public class NestedContext extends Context {
 
 	@Override
 	public void put(String name, Object value) {
+		if (env.containsKey(name)) {
+			env.put(name, value);
+		} else if (context.has(name)) {
+			context.put(name, value);
+		}
+	}
+
+	public void putNew(String name, Object value) {
 		env.put(name, value);
 	}
 }
