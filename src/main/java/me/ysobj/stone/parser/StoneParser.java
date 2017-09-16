@@ -3,20 +3,18 @@ package me.ysobj.stone.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.RuntimeErrorException;
-
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.CallFuncNode;
 import me.ysobj.stone.model.FuncNode;
+import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.model.IfNode;
 import me.ysobj.stone.model.OperatorNode;
 import me.ysobj.stone.model.ParamList;
 import me.ysobj.stone.model.Token;
 import me.ysobj.stone.model.WhileNode;
-import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.parser.ParenthesesParser.BracketType;
 import me.ysobj.stone.tokenizer.Tokenizer;
 

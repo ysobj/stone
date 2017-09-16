@@ -211,7 +211,15 @@ public class StoneParserTest {
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var a = 3; var a = 4"));
 		astNode.evaluate(context);
-		
+	}
+	
+	@Test
+	public void test22() throws Exception{
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("func hoge(){ 123 }; var x = hoge();"));
+		astNode.evaluate(context);
+		assertThat(context.get("x"), is(123L));
 	}
 	
 	protected Tokenizer createTokenizer(String str) {
