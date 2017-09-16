@@ -5,6 +5,7 @@ import static org.hamcrest.core.Is.is;
 import org.junit.Test;
 
 import me.ysobj.stone.exception.ParseException;
+import me.ysobj.stone.exception.VariableAlreadyDefinedException;
 import me.ysobj.stone.exception.VariableNotFoundException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.Context;
@@ -203,6 +204,16 @@ public class StoneParserTest {
 		ASTNode astNode = parser.parse(createTokenizer("a = 3"));
 		astNode.evaluate(context);
 	}
+	
+	@Test(expected=VariableAlreadyDefinedException.class)
+	public void test21() throws Exception{
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("var a = 3; var a = 4"));
+		astNode.evaluate(context);
+		
+	}
+	
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
