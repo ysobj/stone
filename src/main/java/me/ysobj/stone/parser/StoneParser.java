@@ -143,7 +143,14 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				return new IfNode(children[1], children[2]);
+				if (children.length == 4) {
+					if (children[3] == null) {
+						return new IfNode(children[1], children[2]);
+					}
+					ASTNode[] el = ((ASTNodeList) children[3]).getNodes();
+					return new IfNode(children[1], children[2], el[1]);
+				}
+				throw new RuntimeException();
 			}
 
 		};
@@ -180,6 +187,7 @@ public class StoneParser implements Parser {
 			}
 		});
 		ifParser.add(block);
+		ifParser.add(new OptionalParser(new SequenceParser(new KeywordParser("else"), block)));
 		whileParser.add(block);
 		func.add(block);
 		Parser code = new ChoiceParser(func, statement);
@@ -211,9 +219,9 @@ public class StoneParser implements Parser {
 	// func := "func" IDENTIFIER param_list block
 	// factor := ( "(" expression ")"| NUMBER | STRING | IDENTIFIER ) { arg_list }
 	// expression := factor {OPERATOR factor}
-	// block := "{" [ statement ] {TERMINATOR [ statement ]} "}"
+	// block := "{" statement {TERMINATOR [ statement ]} "}"
 	// simple := expression
-	// statement := "if" expression block
+	// statement := "if" expression block ["else" block]
 	// | while expression block
 	// | "var" IDENTIFIER OPERATOR expression
 	// | simple

@@ -222,6 +222,14 @@ public class StoneParserTest {
 		assertThat(context.get("x"), is(123L));
 	}
 	
+	@Test
+	public void test23() throws Exception{
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("var x = 1; var y = 2; if( x == 0 ){ y = 3 } else { y = 4 }"));
+		astNode.evaluate(context);
+		assertThat(context.get("y"), is(4L));
+	}	
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
