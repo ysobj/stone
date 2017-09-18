@@ -21,10 +21,19 @@ public class IfNode extends ASTNode {
 		Object cond = condition.evaluate(context);
 		if (((Boolean) cond).booleanValue()) {
 			return ifBlock.evaluate(context);
-		}else if(elseBlock != null) {
+		} else if (elseBlock != null) {
 			return elseBlock.evaluate(context);
 		}
 		return Void.VOID;
+	}
+
+	@Override
+	public String toString() {
+		String ret = "if (" + condition + "){" + ifBlock + "}";
+		if (elseBlock == null) {
+			return ret;
+		}
+		return ret + "else{" + elseBlock + "}";
 	}
 
 }

@@ -11,7 +11,7 @@ public class CallFuncNode extends ASTNode {
 
 	@Override
 	public Object evaluate(Context context) {
-		FuncNode func = (FuncNode)context.get(identifier.getName());
+		FuncNode func = (FuncNode) context.get(identifier.getName());
 		Identifier[] ids = func.getParamList().getNodes();
 		ASTNode[] argArray = args.nodes;
 		NestedContext nestedContext = new NestedContext(context);
@@ -21,6 +21,11 @@ public class CallFuncNode extends ASTNode {
 			nestedContext.putNew(identifier.getName(), arg.evaluate(context));
 		}
 		return func.getBlock().evaluate(nestedContext);
+	}
+
+	@Override
+	public String toString() {
+		return identifier + "(" + args + ")";
 	}
 
 }

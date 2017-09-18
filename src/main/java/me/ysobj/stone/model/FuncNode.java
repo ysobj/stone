@@ -1,3 +1,4 @@
+
 package me.ysobj.stone.model;
 
 public class FuncNode extends ASTNode {
@@ -24,6 +25,11 @@ public class FuncNode extends ASTNode {
 
 	public ASTNode getBlock() {
 		return block;
+	}
+
+	@Override
+	public String toString() {
+		return "func " + identifier + "( " + paramList + " ){" + block + "}";
 	}
 
 }
