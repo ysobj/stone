@@ -139,7 +139,7 @@ public class StoneParser implements Parser {
 		};
 		parenthesesExp.setParser(expression);
 		Parser simple = expression;
-		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), expression /* ,block */) {
+		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), parenthesesExp /* ,block */) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -153,7 +153,7 @@ public class StoneParser implements Parser {
 			}
 
 		};
-		SequenceParser whileParser = new SequenceParser(new KeywordParser("while"), expression /* ,block */) {
+		SequenceParser whileParser = new SequenceParser(new KeywordParser("while"), parenthesesExp /* ,block */) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -222,12 +222,14 @@ public class StoneParser implements Parser {
 	// params := param { "," param }
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
-	// factor := ( "(" expression ")"| NUMBER | STRING | IDENTIFIER ) { arg_list }
+	// factor := ( parentheses_expression | NUMBER | STRING | IDENTIFIER ) {
+	// arg_list }
 	// expression := factor {OPERATOR factor}
+	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"
 	// simple := expression
-	// statement := "if" expression block ["else" block]
-	// | while expression block
+	// statement := "if" parentheses_expression block ["else" block]
+	// | while parentheses_expression block
 	// | "var" IDENTIFIER OPERATOR expression
 	// | simple
 	// code := func | statement

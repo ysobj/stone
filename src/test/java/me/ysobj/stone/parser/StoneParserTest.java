@@ -125,7 +125,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser
-				.parse(createTokenizer("var hoge = 2 ; var fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
+				.parse(createTokenizer("var hoge = 2 ; var fuga = 3; if(hoge == 2){hoge = 3 ; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(4L));
@@ -136,7 +136,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser
-				.parse(createTokenizer("var hoge = 2 ; var   fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
+				.parse(createTokenizer("var hoge = 2 ; var   fuga = 3; if(hoge == 3){hoge = 3; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(2L));
 		assertThat(context.get("fuga"), is(3L));
@@ -156,7 +156,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(
-				createTokenizer("var hoge = 0 ;var fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
+				createTokenizer("var hoge = 0 ;var fuga = 0; while(hoge < 3){hoge = hoge + 1;  fuga = fuga +2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(6L));
@@ -178,7 +178,7 @@ public class StoneParserTest {
 	public void test17() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var hoge = 0 ; if hoge < 1 { var fuga = 2}"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 0 ; if( hoge < 1){ var fuga = 2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(0L));
 		assertThat(context.get("fuga"), is(2L));
@@ -224,6 +224,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func hoge(){ 123 }; var x = hoge();"));
+		assertThat(astNode.toString(), is("[func hoge( [] ){[[123]]}, [x = [hoge, []]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(123L));
 	}
