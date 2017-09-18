@@ -15,18 +15,20 @@ public class RepeatParserTest {
 	@Test
 	public void test1() throws ParseException {
 		RepeatParser parser = new RepeatParser(new KeywordParser("A"));
-		ASTNodeList nodeList = (ASTNodeList)parser.parse(new Tokenizer("A A A A A"));
-		
+		ASTNodeList nodeList = (ASTNodeList) parser
+				.parse(new Tokenizer("A A A A A", new String[] {}, new String[] { "A" }));
+
 		assertThat(nodeList.getNodes().length, is(5));
 	}
 
 	@Test
 	public void test2() throws ParseException {
 		Parser keyword = new KeywordParser("A");
-		RepeatParser repOption = new RepeatParser(new SequenceParser(new KeywordParser(","),keyword));
+		RepeatParser repOption = new RepeatParser(new SequenceParser(new KeywordParser(","), keyword));
 		Parser parser = new SequenceParser(keyword, repOption);
-		ASTNodeList nodeList = (ASTNodeList)parser.parse(new Tokenizer("A,A,A,A,A"));
-		
+		ASTNodeList nodeList = (ASTNodeList) parser
+				.parse(new Tokenizer("A,A,A,A,A", new String[] {}, new String[] { "A" }));
+
 		assertThat(nodeList.getNodes().length, is(2));
 		ASTNode node = nodeList.getNodes()[1];
 		System.out.println(node);

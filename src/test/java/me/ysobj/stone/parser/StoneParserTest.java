@@ -120,7 +120,8 @@ public class StoneParserTest {
 	public void test12() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var hoge = 2 ; var fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
+		ASTNode astNode = parser
+				.parse(createTokenizer("var hoge = 2 ; var fuga = 3; if hoge == 2 {hoge = 3 ; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(4L));
@@ -130,7 +131,8 @@ public class StoneParserTest {
 	public void test13() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var hoge = 2 ; var   fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
+		ASTNode astNode = parser
+				.parse(createTokenizer("var hoge = 2 ; var   fuga = 3; if hoge == 3 {hoge = 3; fuga = 4}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(2L));
 		assertThat(context.get("fuga"), is(3L));
@@ -149,8 +151,8 @@ public class StoneParserTest {
 	public void test15() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser
-				.parse(createTokenizer("var hoge = 0 ;var fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
+		ASTNode astNode = parser.parse(
+				createTokenizer("var hoge = 0 ;var fuga = 0; while hoge < 3 {hoge = hoge + 1;  fuga = fuga +2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(3L));
 		assertThat(context.get("fuga"), is(6L));
@@ -172,8 +174,7 @@ public class StoneParserTest {
 	public void test17() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser
-				.parse(createTokenizer("var hoge = 0 ; if hoge < 1 { var fuga = 2}"));
+		ASTNode astNode = parser.parse(createTokenizer("var hoge = 0 ; if hoge < 1 { var fuga = 2}"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(0L));
 		assertThat(context.get("fuga"), is(2L));
@@ -192,48 +193,50 @@ public class StoneParserTest {
 	public void test19() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var a = 1; var b = 2; var c = 3; func hoge(x,y){ a = a + x }; hoge(b,c);"));
+		ASTNode astNode = parser
+				.parse(createTokenizer("var a = 1; var b = 2; var c = 3; func hoge(x,y){ a = a + x }; hoge(b,c);"));
 		astNode.evaluate(context);
 		assertThat(context.get("a"), is(3L));
 	}
 
-	@Test(expected=VariableNotFoundException.class)
+	@Test(expected = VariableNotFoundException.class)
 	public void test20() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("a = 3"));
 		astNode.evaluate(context);
 	}
-	
-	@Test(expected=VariableAlreadyDefinedException.class)
-	public void test21() throws Exception{
+
+	@Test(expected = VariableAlreadyDefinedException.class)
+	public void test21() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var a = 3; var a = 4"));
 		astNode.evaluate(context);
 	}
-	
+
 	@Test
-	public void test22() throws Exception{
+	public void test22() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func hoge(){ 123 }; var x = hoge();"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(123L));
 	}
-	
+
 	@Test
-	public void test23() throws Exception{
+	public void test23() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var x = 1; var y = 2; if( x == 0 ){ y = 3 } else { y = 4 }"));
+		ASTNode astNode = parser.parse(createTokenizer("var x = 1; var y = 2; if x == 0 { y = 3 } else { y = 4 }"));
 		astNode.evaluate(context);
 		assertThat(context.get("y"), is(4L));
-	}	
+	}
+
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] {"if","while","func","var"});
+				new String[] { "if", "while", "func", "var" });
 	}
 
 }

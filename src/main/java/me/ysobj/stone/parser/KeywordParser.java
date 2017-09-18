@@ -18,7 +18,7 @@ public class KeywordParser implements Parser {
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		Token token = tokenizer.peek();
-		if (token == Token.EOF) {
+		if (token == Token.EOF || token.getType() != Token.TokenType.KEYWORD) {
 			throw new ParseException();
 		}
 		if (keyword == null || keyword.equals(token.getOriginal())) {
