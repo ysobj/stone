@@ -45,4 +45,13 @@ public class ParenthesesParser implements Parser {
 		this.parser = parser;
 	}
 
+	@Override
+	public String toString() {
+		if (open == TokenType.PAREN_OPEN) {
+			return "( ??? )";
+		} else {
+			return "[ ??? ]";
+		}
+	}
+
 }

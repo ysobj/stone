@@ -20,4 +20,10 @@ public class Identifier extends ASTNode {
 	public String getName() {
 		return token.getOriginal();
 	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
+
 }
