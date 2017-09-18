@@ -1,6 +1,8 @@
 package me.ysobj.stone.parser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringJoiner;
 
 import me.ysobj.stone.exception.ParseException;
@@ -18,17 +20,20 @@ public class SequenceParser implements Parser {
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		boolean accept = false;
-		ASTNode[] children = new ASTNode[parsers.length];
+		List<ASTNode> children = new ArrayList<>();
 		for (int i = 0; i < parsers.length; i++) {
 			Parser parser = parsers[i];
 			ASTNode tmp = parser.parse(tokenizer);
 			if (tmp != null) {
 				accept = true;
-				children[i] = tmp;
+				children.add(tmp);
 			}
 		}
 		if (accept) {
-			return build(children);
+			if (children.size() == 0) {
+				return null;
+			}
+			return build(children.toArray(new ASTNode[children.size()]));
 		} else {
 			throw new ParseException();
 		}

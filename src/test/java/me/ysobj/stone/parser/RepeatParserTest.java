@@ -24,14 +24,14 @@ public class RepeatParserTest {
 	@Test
 	public void test2() throws ParseException {
 		Parser keyword = new KeywordParser("A");
-		RepeatParser repOption = new RepeatParser(new SequenceParser(new KeywordParser(","), keyword));
+		RepeatParser repOption = new RepeatParser(new SequenceParser(new CommaParser(), keyword));
 		Parser parser = new SequenceParser(keyword, repOption);
 		ASTNodeList nodeList = (ASTNodeList) parser
 				.parse(new Tokenizer("A,A,A,A,A", new String[] {}, new String[] { "A" }));
 
 		assertThat(nodeList.getNodes().length, is(2));
-		ASTNode node = nodeList.getNodes()[1];
-		System.out.println(node);
+		ASTNodeList nodeList2 = (ASTNodeList) nodeList.getNodes()[1];
+		assertThat(nodeList2.getNodes().length, is(4));
 	}
 
 }

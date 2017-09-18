@@ -50,6 +50,9 @@ public class RepeatParser implements Parser {
 			}
 		} catch (ParseException e) {
 		}
+		if(nodes.size() == 0) {
+			return null;
+		}
 		return new ASTNodeList(nodes.toArray(new ASTNode[] {}));
 	}
 

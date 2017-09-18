@@ -14,10 +14,11 @@ import me.ysobj.stone.tokenizer.Tokenizer;
 public class StoneParserTest {
 
 	@Test
-	public void test1() throws ParseException {
+	public void testSimpleAssignment() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123"));
+		assertThat(astNode.toString(), is("[hoge = [123]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(123L));
 	}
@@ -27,6 +28,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 * 2"));
+		assertThat(astNode.toString(), is("[hoge = [123] * [2]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(246L));
 	}
@@ -36,6 +38,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 - 3 + 1"));
+		assertThat(astNode.toString(), is("[hoge = [123] - [3] + [1]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is(121L));
 	}
@@ -45,6 +48,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = 'abc'"));
+		assertThat(astNode.toString(), is("[hoge = ['abc']]"));
 		astNode.evaluate(context);
 		assertThat(context.get("hoge"), is("abc"));
 	}
@@ -90,7 +94,7 @@ public class StoneParserTest {
 	}
 
 	@Test
-	public void test9() throws ParseException {
+	public void testOperatorPrecedence() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = 123 + 2 * 4"));
@@ -99,7 +103,7 @@ public class StoneParserTest {
 	}
 
 	@Test
-	public void test10() throws ParseException {
+	public void testOperatorPrecedenceWithParentheses() throws ParseException {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var hoge = (123 + 2) * 4"));

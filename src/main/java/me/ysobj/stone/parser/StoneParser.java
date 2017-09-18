@@ -91,7 +91,7 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				if (children[1] == null) {
+				if (children.length == 1) {
 					return children[0];
 				}
 				ASTNodeList list = (ASTNodeList) children[1];
@@ -112,9 +112,9 @@ public class StoneParser implements Parser {
 					if (nodeList.getNodes().length == 2 && nodeList.getNodes()[1] == null) {
 						return nodeList.getNodes()[0];
 					}
-					Identifier idetifier = (Identifier) nodeList.getNodes()[0];
+					Identifier identifier = (Identifier) nodeList.getNodes()[0];
 					ASTNodeList args = (ASTNodeList) nodeList.getNodes()[1];
-					return new CallFuncNode(idetifier, args);
+					return new CallFuncNode(identifier, args);
 				}
 				OperatorNode left = (OperatorNode) nodes[1];
 				if (nodes.length == 3) {
@@ -143,10 +143,9 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				if (children.length == 4) {
-					if (children[3] == null) {
-						return new IfNode(children[1], children[2]);
-					}
+				if (children.length == 3) {
+					return new IfNode(children[1], children[2]);
+				} else if (children.length == 4) {
 					ASTNode[] el = ((ASTNodeList) children[3]).getNodes();
 					return new IfNode(children[1], children[2], el[1]);
 				}
@@ -177,11 +176,13 @@ public class StoneParser implements Parser {
 		block.setParser(new SequenceParser(statement, blockOption) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
 				List<ASTNode> tmp = new ArrayList<>();
 				tmp.add(children[0]);
-				for (ASTNode astNode : nodeArray) {
-					tmp.add(((ASTNodeList) astNode).getNodes()[1]);
+				if (children.length == 2) {
+					ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
+					for (ASTNode astNode : nodeArray) {
+						tmp.add(((ASTNodeList) astNode).getNodes()[0]);
+					}
 				}
 				return new ASTNodeList(tmp.toArray(new ASTNode[0]));
 			}
@@ -194,11 +195,15 @@ public class StoneParser implements Parser {
 		parser = new SequenceParser(code, new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
 				List<ASTNode> tmp = new ArrayList<>();
 				tmp.add(children[0]);
-				for (ASTNode astNode : nodeArray) {
-					tmp.add(astNode);
+				if (children.length == 2) {
+					ASTNode[] nodeArray = ((ASTNodeList) children[1]).getNodes();
+					for (ASTNode astNode : nodeArray) {
+						if (astNode != null) {
+							tmp.add(astNode);
+						}
+					}
 				}
 				return new ASTNodeList(tmp.toArray(new ASTNode[0]));
 			}
