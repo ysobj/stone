@@ -189,6 +189,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("var a = 0; func hoge(){ a = a + 1 }; hoge();"));
+		assertThat(astNode.toString(), is("[a = [0], [func hoge( [] ){[[a] = [a] + [1]]}], [[hoge([])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("a"), is(1L));
 	}
@@ -224,24 +225,48 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func hoge(){ 123 }; var x = hoge();"));
-		assertThat(astNode.toString(), is("[func hoge( [] ){[[123]]}, [x = [hoge, []]]]"));
+		assertThat(astNode.toString(), is("[func hoge( [] ){[[123]]}, [x = [hoge]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(123L));
+
 	}
 
 	@Test
 	public void test23() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("var x = 1; var y = 2; if x == 0 { y = 3 } else { y = 4 }"));
+		ASTNode astNode = parser.parse(createTokenizer("var x = 1; var y = 2; if (x == 0) { y = 3 } else { y = 4 }"));
 		astNode.evaluate(context);
 		assertThat(context.get("y"), is(4L));
+	}
+
+	@Test
+	public void test24() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("func abc(x){ x * 2}; var y = abc(10);"));
+		assertThat(astNode.toString(), is("[func abc( [x] ){[[x] * [2]]}, [y = [abc([[10]])]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("y"), is(20L));
+	}
+
+	@Test
+	public void testCalculateFibonacciNumber() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("func fib(n){ if(n<2){ n }else{ n * 2}; };var x = fib(10);"));
+		// ASTNode astNode = parser
+		// .parse(createTokenizer("func fib(n){ if(n<2){ n }else{ fib(n-1) + fib(n-2)}
+		// };var x = fib(10);"));
+		assertThat(astNode.toString(), is("[func fib( [n] ){[[123]]}, [x = [hoge]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("x"), is(55L));
 	}
 
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] { "if", "while", "func", "var" });
+				new String[] { "if", "while", "func", "var", "else" });
 	}
 
 }

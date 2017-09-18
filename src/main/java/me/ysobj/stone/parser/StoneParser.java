@@ -58,32 +58,34 @@ public class StoneParser implements Parser {
 
 		};
 		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
-		SequenceParser factor = new SequenceParser(
-				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), new IdentifierParser()));
-		Parser arg = factor;
-		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
-		Parser args = new SequenceParser(arg, argsOption) {
+		SequenceParser callIdentifier = new SequenceParser(new IdentifierParser()) {
 			@Override
-			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
-				ASTNodeList argList = new ASTNodeList();
-				// TODO Auto-generated method stub
-				while (tokenizer.hasNext()) {
-					Token token = tokenizer.peek();
-					if (token.getType() == Token.TokenType.IDENTIFIER) {
-						tokenizer.next();
-						argList.add(new Identifier(token));
-					} else if (token.getType() == Token.TokenType.COMMA) {
-						tokenizer.next();
-					} else {
-						break;
-					}
+			protected ASTNode build(ASTNode[] children) {
+				if (children.length == 1) {
+					return children[0];
 				}
-				return argList;
+				return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
 			}
 		};
-		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS);
+		SequenceParser factor = new SequenceParser(
+				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), callIdentifier));
+		Parser arg = factor;
+		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
+		Parser args = new SequenceParser(arg, argsOption);
+		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS) {
+
+			@Override
+			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+				ASTNode tmp = super.parse(tokenizer);
+				if (tmp == null) {
+					tmp = new ASTNodeList();
+				}
+				return tmp;
+			}
+
+		};
 		argList.setParser(args);
-		factor.add(new OptionalParser(argList));
+		callIdentifier.add(new OptionalParser(argList));
 		Parser operator = new OperatorParser();
 		Parser terminator = new TerminatorParser();
 		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
@@ -222,8 +224,8 @@ public class StoneParser implements Parser {
 	// params := param { "," param }
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
-	// factor := ( parentheses_expression | NUMBER | STRING | IDENTIFIER ) {
-	// arg_list }
+	// call_identifier := IDENTIFIER {arg_list}
+	// factor := ( parentheses_expression | NUMBER | STRING | call_identifier )
 	// expression := factor {OPERATOR factor}
 	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"
