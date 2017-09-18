@@ -12,7 +12,7 @@ public class TerminatorParser implements Parser {
 		Token token = tokenizer.peek();
 		if (token.getType() == Token.TokenType.TERMINATOR) {
 			tokenizer.next();
-			return new ASTNode(token);
+			return null;
 		}
 		throw new ParseException();
 	}
