@@ -144,6 +144,19 @@ public class ParserTest {
 	}
 
 	@Test
+	public void testParseExceptionMessage() throws Exception {
+		Parser delete = new KeywordParser("delete");
+		Parser from = new KeywordParser("from");
+		Parser any = new IdentifierParser();
+		Parser parser = new SequenceParser(delete, from, any);
+		try {
+			parser.parse(createTokenizer("delete from 12345"));
+		}catch(ParseException e) {
+			assertThat(e.getMessage(), is("ParseException [12345] at: 12"));
+		}
+	}
+
+	@Test
 	public void testRepeatParser() throws Exception {
 		RepeatParser parser = new RepeatParser(new KeywordParser("A"));
 		assertThat(parser.parse(createTokenizer("A A A")), not(nullValue()));
