@@ -17,6 +17,12 @@ public class TokenizerTest {
 				new String[] { "select", "from" });
 	}
 
+	protected Tokenizer createStoneTokenizer(String str) {
+		return new Tokenizer(str,
+				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
+				new String[] { "if", "while", "func", "var", "else" });
+	}
+
 	@Test
 	public void testSimpleCase() {
 		Token tmp = null;
@@ -426,7 +432,7 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("456"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 	}
-	
+
 	@Test
 	public void testLt2() {
 		Tokenizer tokenizer = createTokenizer("hoge = n<456");
@@ -445,5 +451,59 @@ public class TokenizerTest {
 		tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is("456"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
+	}
+
+	@Test
+	public void testParseFibonacciNumberFunc() {
+		Tokenizer tokenizer = createStoneTokenizer(
+				"func fib(n){ if(n<2){ n }else{ fib(n-1) + fib(n-2);}};var x = fib(10);");
+		assertConvenient(tokenizer, "func", TokenType.KEYWORD);
+		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "if", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "<",TokenType.OPERATOR);
+		assertConvenient(tokenizer, "2",TokenType.NUMBER);
+		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, "else", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "-",TokenType.OPERATOR);
+		assertConvenient(tokenizer, "1",TokenType.NUMBER);
+		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "+",TokenType.OPERATOR);
+		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "-",TokenType.OPERATOR);
+		assertConvenient(tokenizer, "2",TokenType.NUMBER);
+		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
+		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "x",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=",TokenType.OPERATOR);
+		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "10",TokenType.NUMBER);
+		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
+	}
+
+	protected void assertConvenient(Tokenizer tokenizer, String org, TokenType type) {
+		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is(org));
+		assertThat(tmp.getType(), is(type));
 	}
 }
