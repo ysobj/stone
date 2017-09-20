@@ -426,4 +426,24 @@ public class TokenizerTest {
 		assertThat(tmp.getOriginal(), is("456"));
 		assertThat(tmp.getType(), is(TokenType.NUMBER));
 	}
+	
+	@Test
+	public void testLt2() {
+		Tokenizer tokenizer = createTokenizer("hoge = n<456");
+		Token tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("hoge"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("="));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("n"));
+		assertThat(tmp.getType(), is(TokenType.IDENTIFIER));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("<"));
+		assertThat(tmp.getType(), is(TokenType.OPERATOR));
+		tmp = tokenizer.next();
+		assertThat(tmp.getOriginal(), is("456"));
+		assertThat(tmp.getType(), is(TokenType.NUMBER));
+	}
 }

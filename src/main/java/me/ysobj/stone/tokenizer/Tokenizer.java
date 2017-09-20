@@ -128,7 +128,7 @@ public class Tokenizer {
 				case '%':
 				case '<':
 				case '>':
-					if (isNumeric) {
+					if (sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
 					}
