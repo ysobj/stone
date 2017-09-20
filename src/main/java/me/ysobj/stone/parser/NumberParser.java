@@ -12,13 +12,13 @@ public class NumberParser extends KeywordParser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		Token token = tokenizer.peek();
 		if (token == Token.EOF) {
-			throw new ParseException();
+			throw new ParseException(token);
 		}
 		if (keyword == null && token.getType() == TokenType.NUMBER) {
 			tokenizer.next();
 			return new NumberLiteral(token);
 		}
-		throw new ParseException();
+		throw new ParseException(token);
 	}
 	@Override
 	public String toString() {

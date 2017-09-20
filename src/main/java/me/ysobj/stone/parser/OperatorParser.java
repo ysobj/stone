@@ -27,13 +27,13 @@ public class OperatorParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		Token token = tokenizer.peek();
 		if (token == Token.EOF) {
-			throw new ParseException();
+			throw new ParseException(token);
 		}
 		if (match(token)) {
 			tokenizer.next();
 			return new OperatorNode(token, inVarContext);
 		}
-		throw new ParseException();
+		throw new ParseException(token);
 	}
 
 	protected boolean match(Token token) {

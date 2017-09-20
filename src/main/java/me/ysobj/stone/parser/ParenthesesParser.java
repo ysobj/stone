@@ -29,13 +29,13 @@ public class ParenthesesParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		Token token = tokenizer.peek();
 		if (token.getType() != open) {
-			throw new ParseException();
+			throw new ParseException(token);
 		}
 		tokenizer.next();
 		ASTNode astNode = this.parser.parse(tokenizer);
 		token = tokenizer.peek();
 		if (token.getType() != close) {
-			throw new ParseException();
+			throw new ParseException(token);
 		}
 		tokenizer.next();
 		return astNode;

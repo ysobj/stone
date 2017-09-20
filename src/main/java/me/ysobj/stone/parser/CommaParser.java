@@ -13,7 +13,7 @@ public class CommaParser implements Parser {
 			tokenizer.next();
 			return new ASTNode(token);
 		}
-		throw new ParseException();
+		throw new ParseException(token);
 	}
 
 	@Override

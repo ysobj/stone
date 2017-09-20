@@ -16,13 +16,13 @@ public class IdentifierParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		Token token = tokenizer.peek();
 		if (token == Token.EOF) {
-			throw new ParseException();
+			throw new ParseException(token);
 		}
 		if (token.getType() == TokenType.IDENTIFIER) {
 			tokenizer.next();
 			return new Identifier(token);
 		}
-		throw new ParseException();
+		throw new ParseException(token);
 	}
 
 	@Override

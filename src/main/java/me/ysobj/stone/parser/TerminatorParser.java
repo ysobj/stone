@@ -14,7 +14,7 @@ public class TerminatorParser implements Parser {
 			tokenizer.next();
 			return null;
 		}
-		throw new ParseException();
+		throw new ParseException(token);
 	}
 
 	@Override

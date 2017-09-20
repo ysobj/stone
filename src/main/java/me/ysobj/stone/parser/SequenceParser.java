@@ -35,7 +35,7 @@ public class SequenceParser implements Parser {
 			}
 			return build(children.toArray(new ASTNode[children.size()]));
 		} else {
-			throw new ParseException();
+			throw new ParseException(tokenizer.peek());
 		}
 	}
 

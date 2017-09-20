@@ -16,13 +16,15 @@ public class ChoiceParser implements Parser {
 
 	@Override
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+		ParseException exception = null;
 		for (Parser parser : parsers) {
 			try {
 				return parser.parse(tokenizer);
 			} catch (ParseException e) {
+				exception = e;
 			}
 		}
-		throw new ParseException();
+		throw exception;
 	}
 
 	@Override
