@@ -241,13 +241,23 @@ public class StoneParserTest {
 	}
 
 	@Test
-	public void test24() throws Exception {
+	public void testCallFunctionWithVariable() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func abc(x){ x * 2}; var y = abc(10);"));
 		assertThat(astNode.toString(), is("[func abc( [x] ){[[x] * [2]]}, [y = [abc([[10]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("y"), is(20L));
+	}
+
+	@Test
+	public void testCallFunctionWithExpression() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser.parse(createTokenizer("func abc(x){ x * 2}; var y = abc(10 - 1);"));
+		assertThat(astNode.toString(), is("[func abc( [x] ){[[x] * [2]]}, [y = [abc([[10] - [1]])]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("y"), is(18L));
 	}
 
 	@Test
