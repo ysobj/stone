@@ -204,6 +204,13 @@ public class StoneParserTest {
 		assertThat(context.get("a"), is(3L));
 	}
 
+	@Test
+	public void testCallFunctionWithNoArgs() throws ParseException {
+		Parser parser = new StoneParser();
+		ASTNode astNode = parser.parse(createTokenizer("hoge();"));
+		assertThat(astNode.toString(), is("[[hoge([])]]"));
+	}
+
 	@Test(expected = VariableNotFoundException.class)
 	public void test20() throws ParseException {
 		Parser parser = new StoneParser();
@@ -225,7 +232,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func hoge(){ 123 }; var x = hoge();"));
-		assertThat(astNode.toString(), is("[func hoge( [] ){[[123]]}, [x = [hoge]]]"));
+		assertThat(astNode.toString(), is("[func hoge( [] ){[[123]]}, [x = [hoge([])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(123L));
 
@@ -264,11 +271,10 @@ public class StoneParserTest {
 	public void testCalculateFibonacciNumber() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser.parse(createTokenizer("func fib(n){ if(n<2){ n }else{ n * 2}; };var x = fib(10);"));
-		// ASTNode astNode = parser
-		// .parse(createTokenizer("func fib(n){ if(n<2){ n }else{ fib(n-1) + fib(n-2)}
-		// };var x = fib(10);"));
-		assertThat(astNode.toString(), is("[func fib( [n] ){[[123]]}, [x = [hoge]]]"));
+		ASTNode astNode = parser
+				.parse(createTokenizer("func fib(n){ if(n<2){ n }else{ fib(n-1) + fib(n-2)}};var x = fib(10);"));
+		assertThat(astNode.toString(), is(
+				"[func fib( [n] ){[if ([n] < [2]){[[n]]}else{[[fib([[n] - [1]])] + [fib([[n] - [2]])]]}]}, [x = [fib([[10]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(55L));
 	}

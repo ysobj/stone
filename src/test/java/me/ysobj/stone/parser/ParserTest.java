@@ -151,7 +151,7 @@ public class ParserTest {
 		Parser parser = new SequenceParser(delete, from, any);
 		try {
 			parser.parse(createTokenizer("delete from 12345"));
-		}catch(ParseException e) {
+		} catch (ParseException e) {
 			assertThat(e.getMessage(), is("ParseException [12345] at: 12"));
 		}
 	}
@@ -178,5 +178,4 @@ public class ParserTest {
 		assertThat(parser.parse(createTokenizer("select A,A,A from hoge")), not(nullValue()));
 		assertThat(parser.parse(createTokenizer("select A from fuga")), not(nullValue()));
 	}
-
 }

@@ -32,7 +32,6 @@ public class StoneParser implements Parser {
 			@Override
 			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 				ParamList paramList = new ParamList();
-				// TODO Auto-generated method stub
 				while (tokenizer.hasNext()) {
 					Token token = tokenizer.peek();
 					if (token.getType() == Token.TokenType.IDENTIFIER) {
@@ -59,6 +58,13 @@ public class StoneParser implements Parser {
 		};
 		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
 		SequenceParser callIdentifier = new SequenceParser(new IdentifierParser()) {
+
+			@Override
+			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+				// TODO Auto-generated method stub
+				return super.parse(tokenizer);
+			}
+
 			@Override
 			protected ASTNode build(ASTNode[] children) {
 				if (children.length == 1) {
@@ -69,27 +75,7 @@ public class StoneParser implements Parser {
 		};
 		SequenceParser factor = new SequenceParser(
 				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), callIdentifier));
-		Parser arg = factor;
-		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
-		Parser args = new SequenceParser(arg, argsOption);
-		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS) {
-
-			@Override
-			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
-				ASTNode tmp = super.parse(tokenizer);
-				if (tmp == null) {
-					tmp = new ASTNodeList();
-				}
-				return tmp;
-			}
-
-		};
-		argList.setParser(args);
-		callIdentifier.add(new OptionalParser(argList));
-		Parser operator = new OperatorParser();
-		Parser terminator = new TerminatorParser();
-		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
-		Parser expression = new SequenceParser(factor, expressionOption) {
+		SequenceParser expression = new SequenceParser() {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -139,6 +125,28 @@ public class StoneParser implements Parser {
 				return left.getOperator().order() < right.getOperator().order();
 			}
 		};
+		Parser arg = expression;
+		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
+		Parser args = new OptionalParser(new SequenceParser(arg, argsOption));
+		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS) {
+
+			@Override
+			public ASTNode parse(Tokenizer tokenizer) throws ParseException {
+				ASTNode tmp = super.parse(tokenizer);
+				if (tmp == null) {
+					tmp = new ASTNodeList();
+				}
+				return tmp;
+			}
+
+		};
+		argList.setParser(args);
+		callIdentifier.add(new OptionalParser(argList, true));
+		Parser operator = new OperatorParser();
+		Parser terminator = new TerminatorParser();
+		Parser expressionOption = new OptionalParser(new RepeatParser(new SequenceParser(operator, factor)));
+		expression.add(factor);
+		expression.add(expressionOption);
 		parenthesesExp.setParser(expression);
 		Parser simple = expression;
 		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), parenthesesExp /* ,block */) {
@@ -217,7 +225,7 @@ public class StoneParser implements Parser {
 	public ASTNode parse(Tokenizer tokenizer) throws ParseException {
 		return this.parser.parse(tokenizer);
 	}
-	// arg := factor
+	// arg := expression
 	// args := arg { "," arg }
 	// arg_list := "(" [args] ")"
 	// param := IDENTIFIER
