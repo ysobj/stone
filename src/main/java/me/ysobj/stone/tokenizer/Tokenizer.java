@@ -139,13 +139,17 @@ public class Tokenizer {
 				case BRACE_OPEN:
 				case BRACE_CLOSE:
 				case SEMICOLON:
-				case LF:
 					if (sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
 					} else {
 						return createToken(String.valueOf((char) r), readLength);
 					}
+				case LF:
+					if (sb.length() > 0) {
+						return createToken(sb.toString(), readLength);
+					}
+					continue;
 				case QUOTE:
 					isOpen = !isOpen;
 					break;

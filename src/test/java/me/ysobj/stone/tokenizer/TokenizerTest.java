@@ -501,6 +501,44 @@ public class TokenizerTest {
 		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
 	}
 
+	@Test
+	public void testLf() throws Exception{
+		Tokenizer tokenizer1 = createStoneTokenizer(
+				"var x = 123;\nvar y = 456;");
+		Tokenizer tokenizer2 = createStoneTokenizer(
+				"var x = 123;var y = 456;");
+		Token t1 = tokenizer1.next();
+		Token t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+		t1 = tokenizer1.next();
+		t2 = tokenizer2.next();
+		assertThat(t1,is(t2));
+	}
+	
 	protected void assertConvenient(Tokenizer tokenizer, String org, TokenType type) {
 		Token tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is(org));

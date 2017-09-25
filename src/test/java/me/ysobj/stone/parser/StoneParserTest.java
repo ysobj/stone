@@ -1,6 +1,20 @@
 package me.ysobj.stone.parser;
 
 import static org.junit.Assert.*;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
 import static org.hamcrest.core.Is.is;
 import org.junit.Test;
 
@@ -277,6 +291,23 @@ public class StoneParserTest {
 				"[func fib( [n] ){[if ([n] < [2]){[[n]]}else{[[fib([[n] - [1]])] + [fib([[n] - [2]])]]}]}, [x = [fib([[10]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("x"), is(55L));
+	}
+
+	@Test
+	public void testCalculateFibonacciNumberWithSrc() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser
+				.parse(createTokenizer(pathToString("fib.stn")));
+		assertThat(astNode.toString(), is(
+				"[func fib( [n] ){[if ([n] < [2]){[[n]]}else{[[fib([[n] - [1]])] + [fib([[n] - [2]])]]}]}, [x = [fib([[10]])]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("x"), is(55L));
+	}
+
+	protected String pathToString(String name) throws IOException {
+		Path path = Paths.get("target/test-classes/", name);
+		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
 	}
 
 	protected Tokenizer createTokenizer(String str) {
