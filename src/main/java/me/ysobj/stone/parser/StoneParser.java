@@ -56,6 +56,14 @@ public class StoneParser implements Parser {
 			}
 
 		};
+		SequenceParser closure = new SequenceParser(new KeywordParser("func"), paramList) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new FuncNode((ParamList) children[1], children[2]);
+			}
+
+		};
 		ParenthesesParser parenthesesExp = new ParenthesesParser(BracketType.PARENTHESIS);
 		SequenceParser callIdentifier = new SequenceParser(new IdentifierParser()) {
 
@@ -74,7 +82,7 @@ public class StoneParser implements Parser {
 			}
 		};
 		SequenceParser factor = new SequenceParser(
-				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), callIdentifier));
+				new ChoiceParser(parenthesesExp, new NumberParser(), new StringParser(), callIdentifier, closure));
 		SequenceParser expression = new SequenceParser() {
 
 			@Override
@@ -201,6 +209,7 @@ public class StoneParser implements Parser {
 		ifParser.add(new OptionalParser(new SequenceParser(new KeywordParser("else"), block)));
 		whileParser.add(block);
 		func.add(block);
+		closure.add(block);
 		Parser code = new ChoiceParser(func, statement);
 		parser = new SequenceParser(code, new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
 			@Override
@@ -232,8 +241,10 @@ public class StoneParser implements Parser {
 	// params := param { "," param }
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
+	// closure := "func" param_list block
 	// call_identifier := IDENTIFIER {arg_list}
-	// factor := ( parentheses_expression | NUMBER | STRING | call_identifier )
+	// factor := ( parentheses_expression | NUMBER | STRING | call_identifier |
+	// closure)
 	// expression := factor {OPERATOR factor}
 	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"

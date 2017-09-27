@@ -305,6 +305,18 @@ public class StoneParserTest {
 		assertThat(context.get("x"), is(55L));
 	}
 
+	@Test
+	public void testAssignFunctionToVariable() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new Context();
+		ASTNode astNode = parser
+				.parse(createTokenizer(pathToString("assignFunction.stn")));
+		assertThat(astNode.toString(), is(
+				"[x = [func( [] ){ [[35]] }], [y = [x([])]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("y"), is(35L));
+	}
+
 	protected String pathToString(String name) throws IOException {
 		Path path = Paths.get("target/test-classes/", name);
 		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());

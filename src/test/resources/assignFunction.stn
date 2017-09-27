@@ -1,0 +1,1 @@
+var x = func(){ 35 }; var y = x();

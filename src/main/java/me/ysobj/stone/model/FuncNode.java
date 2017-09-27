@@ -13,10 +13,18 @@ public class FuncNode extends ASTNode {
 		this.block = block;
 	}
 
+	public FuncNode(ParamList paramList, ASTNode block) {
+		super();
+		this.paramList = paramList;
+		this.block = block;
+	}
+
 	@Override
 	public Object evaluate(Context context) {
-		context.put(identifier.getName(), this);
-		return Void.VOID;
+		if (identifier != null) {
+			context.put(identifier.getName(), this);
+		}
+		return this;
 	}
 
 	public ParamList getParamList() {
@@ -29,7 +37,10 @@ public class FuncNode extends ASTNode {
 
 	@Override
 	public String toString() {
-		return "func " + identifier + "( " + paramList + " ){" + block + "}";
+		if (this.identifier != null) {
+			return String.format("func %s( %s ){%s}", this.identifier, this.paramList, this.block);
+		}
+		return String.format("func( %s ){ %s }", this.paramList, this.block);
 	}
 
 }
