@@ -17,12 +17,17 @@ public class SubstituteOperator implements Operator {
 			if (context.has(identifier.getName())) {
 				throw new VariableAlreadyDefinedException(identifier.getName());
 			}
+			if (context instanceof NestedContext) {
+				((NestedContext) context).putNew(identifier.getName(), astnode[1].evaluate(context));
+			} else {
+				context.put(identifier.getName(), astnode[1].evaluate(context));
+			}
 		} else {
 			if (!context.has(identifier.getName())) {
 				throw new VariableNotFoundException(identifier.getName());
 			}
+			context.put(identifier.getName(), astnode[1].evaluate(context));
 		}
-		context.put(identifier.getName(), astnode[1].evaluate(context));
 		return Void.VOID;
 
 	}

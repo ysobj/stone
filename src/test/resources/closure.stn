@@ -1,0 +1,11 @@
+var x = func(){
+  var a = 0;
+  func(){
+    a = a + 1;
+    a
+  }
+};
+var y = x();
+var z = y();
+z = y();
+z = y();

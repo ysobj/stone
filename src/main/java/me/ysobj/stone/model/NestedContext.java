@@ -5,6 +5,10 @@ import java.util.HashMap;
 public class NestedContext extends Context {
 	protected Context context;
 
+	public NestedContext() {
+		env = new HashMap<>();
+	}
+
 	public NestedContext(Context context) {
 		this.context = context;
 		env = new HashMap<>();
@@ -12,13 +16,22 @@ public class NestedContext extends Context {
 
 	@Override
 	public boolean has(String name) {
-		return env.containsKey(name) ? true : this.context.has(name);
+		if (env.containsKey(name)) {
+			return true;
+		}
+		if (this.context == null) {
+			return false;
+		}
+		return this.context.has(name);
 	}
 
 	@Override
 	public Object get(String name) {
 		if (env.containsKey(name)) {
 			return env.get(name);
+		}
+		if (this.context == null) {
+			return null;
 		}
 		return this.context.get(name);
 	}
@@ -27,6 +40,8 @@ public class NestedContext extends Context {
 	public void put(String name, Object value) {
 		if (env.containsKey(name)) {
 			env.put(name, value);
+		} else if (this.context == null) {
+			return;
 		} else if (context.has(name)) {
 			context.put(name, value);
 		}
@@ -39,5 +54,11 @@ public class NestedContext extends Context {
 	@Override
 	public String toString() {
 		return "NestedContext [env=" + env + ", context=" + context + "]";
+	}
+
+	public void setOuter(Context context) {
+		if (this != context) {
+			this.context = context;
+		}
 	}
 }

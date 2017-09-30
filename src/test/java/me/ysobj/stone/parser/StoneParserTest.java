@@ -23,6 +23,7 @@ import me.ysobj.stone.exception.VariableAlreadyDefinedException;
 import me.ysobj.stone.exception.VariableNotFoundException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.Context;
+import me.ysobj.stone.model.NestedContext;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class StoneParserTest {
@@ -297,8 +298,7 @@ public class StoneParserTest {
 	public void testCalculateFibonacciNumberWithSrc() throws Exception {
 		Parser parser = new StoneParser();
 		Context context = new Context();
-		ASTNode astNode = parser
-				.parse(createTokenizer(pathToString("fib.stn")));
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("fib.stn")));
 		assertThat(astNode.toString(), is(
 				"[func fib( [n] ){[if ([n] < [2]){[[n]]}else{[[fib([[n] - [1]])] + [fib([[n] - [2]])]]}]}, [x = [fib([[10]])]]]"));
 		astNode.evaluate(context);
@@ -308,13 +308,22 @@ public class StoneParserTest {
 	@Test
 	public void testAssignFunctionToVariable() throws Exception {
 		Parser parser = new StoneParser();
-		Context context = new Context();
-		ASTNode astNode = parser
-				.parse(createTokenizer(pathToString("assignFunction.stn")));
-		assertThat(astNode.toString(), is(
-				"[x = [func( [] ){ [[35]] }], [y = [x([])]]]"));
+		Context context = new NestedContext();
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("assignFunction.stn")));
+		assertThat(astNode.toString(), is("[x = [func( [] ){ [[35]] }], [y = [x([])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("y"), is(35L));
+	}
+
+	@Test
+	public void testClosure() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = new NestedContext();
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("closure.stn")));
+		assertThat(astNode.toString(), is(
+				"[x = [func( [] ){ [a = [0], [func( [] ){ [[a] = [a] + [1], [a]] }]] }], [y = [x([])]], [z = [y([])]], [[z] = [y([])]], [[z] = [y([])]]]"));
+		astNode.evaluate(context);
+		assertThat(context.get("z"), is(3L));
 	}
 
 	protected String pathToString(String name) throws IOException {

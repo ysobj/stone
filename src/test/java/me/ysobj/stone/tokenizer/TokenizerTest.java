@@ -3,7 +3,13 @@ package me.ysobj.stone.tokenizer;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -458,90 +464,110 @@ public class TokenizerTest {
 		Tokenizer tokenizer = createStoneTokenizer(
 				"func fib(n){ if(n<2){ n }else{ fib(n-1) + fib(n-2);}};var x = fib(10);");
 		assertConvenient(tokenizer, "func", TokenType.KEYWORD);
-		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
-		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
-		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "fib", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "{", TokenType.BRACE_OPEN);
 		assertConvenient(tokenizer, "if", TokenType.KEYWORD);
-		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
-		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "<",TokenType.OPERATOR);
-		assertConvenient(tokenizer, "2",TokenType.NUMBER);
-		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
-		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
-		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "<", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "2", TokenType.NUMBER);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "{", TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "n", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "}", TokenType.BRACE_CLOSE);
 		assertConvenient(tokenizer, "else", TokenType.KEYWORD);
-		assertConvenient(tokenizer, "{",TokenType.BRACE_OPEN);
-		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
-		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "-",TokenType.OPERATOR);
-		assertConvenient(tokenizer, "1",TokenType.NUMBER);
-		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
-		assertConvenient(tokenizer, "+",TokenType.OPERATOR);
-		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
-		assertConvenient(tokenizer, "n",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "-",TokenType.OPERATOR);
-		assertConvenient(tokenizer, "2",TokenType.NUMBER);
-		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
-		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
-		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
-		assertConvenient(tokenizer, "}",TokenType.BRACE_CLOSE);
-		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
+		assertConvenient(tokenizer, "{", TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "fib", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "-", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "1", TokenType.NUMBER);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "+", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "fib", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "n", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "-", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "2", TokenType.NUMBER);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
+		assertConvenient(tokenizer, "}", TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, "}", TokenType.BRACE_CLOSE);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
 		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
-		assertConvenient(tokenizer, "x",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "=",TokenType.OPERATOR);
-		assertConvenient(tokenizer,"fib",TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, "(",TokenType.PAREN_OPEN);
-		assertConvenient(tokenizer, "10",TokenType.NUMBER);
-		assertConvenient(tokenizer, ")",TokenType.PAREN_CLOSE);
-		assertConvenient(tokenizer, ";",TokenType.TERMINATOR);
+		assertConvenient(tokenizer, "x", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "fib", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, "10", TokenType.NUMBER);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
 	}
 
 	@Test
-	public void testLf() throws Exception{
-		Tokenizer tokenizer1 = createStoneTokenizer(
-				"var x = 123;\nvar y = 456;");
-		Tokenizer tokenizer2 = createStoneTokenizer(
-				"var x = 123;var y = 456;");
+	public void testLf() throws Exception {
+		Tokenizer tokenizer1 = createStoneTokenizer("var x = 123;\nvar y = 456;");
+		Tokenizer tokenizer2 = createStoneTokenizer("var x = 123;var y = 456;");
 		Token t1 = tokenizer1.next();
 		Token t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 		t1 = tokenizer1.next();
 		t2 = tokenizer2.next();
-		assertThat(t1,is(t2));
+		assertThat(t1, is(t2));
 	}
-	
+
+	@Test
+	public void testTokenizeClosure() throws Exception {
+		Tokenizer tokenizer = createStoneTokenizer(pathToString("closure.stn"));
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "x", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "func", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, "{", TokenType.BRACE_OPEN);
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "a", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "0", TokenType.NUMBER);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
+	}
+
 	protected void assertConvenient(Tokenizer tokenizer, String org, TokenType type) {
 		Token tmp = tokenizer.next();
 		assertThat(tmp.getOriginal(), is(org));
 		assertThat(tmp.getType(), is(type));
+	}
+
+	protected String pathToString(String name) throws IOException {
+		Path path = Paths.get("target/test-classes/", name);
+		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
 	}
 }
