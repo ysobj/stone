@@ -1,21 +1,15 @@
 package me.ysobj.stone.parser;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.core.Is.is;
 import org.junit.Test;
 
 import me.ysobj.stone.exception.ParseException;
@@ -23,7 +17,13 @@ import me.ysobj.stone.exception.VariableAlreadyDefinedException;
 import me.ysobj.stone.exception.VariableNotFoundException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.Context;
+import me.ysobj.stone.model.FuncNode;
+import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.model.NestedContext;
+import me.ysobj.stone.model.ParamList;
+import me.ysobj.stone.model.Token;
+import me.ysobj.stone.model.Token.TokenType;
+import me.ysobj.stone.model.Void;
 import me.ysobj.stone.tokenizer.Tokenizer;
 
 public class StoneParserTest {
@@ -326,9 +326,41 @@ public class StoneParserTest {
 		assertThat(context.get("z"), is(3L));
 	}
 
+	@Test
+	public void testNativePrint() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = createContext();
+		ASTNode astNode = parser.parse(createTokenizer("print('Hello World')"));
+		assertThat(astNode.toString(), is("[[print([['Hello World']])]]"));
+		astNode.evaluate(context);
+	}
+
 	protected String pathToString(String name) throws IOException {
 		Path path = Paths.get("target/test-classes/", name);
 		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
+	}
+
+	protected Context createContext() {
+		NestedContext context = new NestedContext();
+		Token token = Token.create("param1", 0, TokenType.IDENTIFIER);
+		Identifier param = new Identifier(token);
+		ParamList paramList = new ParamList(param);
+		ASTNode block = new ASTNode() {
+
+			@Override
+			public Object evaluate(Context context) {
+				Object obj = context.get("param1");
+				if (obj == null) {
+					obj = "null";
+				}
+				System.out.println(obj.toString());
+				return Void.VOID;
+			}
+
+		};
+		FuncNode node = new FuncNode(paramList, block);
+		context.putNew("print", node);
+		return context;
 	}
 
 	protected Tokenizer createTokenizer(String str) {
