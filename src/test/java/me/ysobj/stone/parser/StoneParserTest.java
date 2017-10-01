@@ -318,10 +318,10 @@ public class StoneParserTest {
 	@Test
 	public void testClosure() throws Exception {
 		Parser parser = new StoneParser();
-		Context context = new NestedContext();
+		Context context = createContext();
 		ASTNode astNode = parser.parse(createTokenizer(pathToString("closure.stn")));
 		assertThat(astNode.toString(), is(
-				"[x = [func( [] ){ [a = [0], [func( [] ){ [[a] = [a] + [1], [a]] }]] }], [y = [x([])]], [z = [y([])]], [[z] = [y([])]], [[z] = [y([])]]]"));
+				"[x = [func( [] ){ [a = [0], [func( [] ){ [[a] = [a] + [1], [a]] }]] }], [y = [x([])]], [z = [y([])]], [[z] = [y([])]], [[z] = [y([])]], [[print([[z]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("z"), is(3L));
 	}

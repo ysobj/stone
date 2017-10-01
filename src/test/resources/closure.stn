@@ -9,3 +9,4 @@ var y = x();
 var z = y();
 z = y();
 z = y();
+print(z);
