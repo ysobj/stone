@@ -15,4 +15,10 @@ public class ClassInfoNode extends ASTNode {
 		return String.format("class %s{%s}", identifier.getName(), classBody.toString());
 	}
 
+	@Override
+	public Object evaluate(Context context) {
+		context.put(identifier.getName(), this);
+		return Void.VOID;
+	}
+
 }

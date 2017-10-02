@@ -260,7 +260,7 @@ public class StoneParser implements Parser {
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
 	// closure := "func" param_list block
-	// call_identifier := IDENTIFIER {arg_list}
+	// call_identifier := IDENTIFIER [DOT IDENTIFIER] {arg_list}
 	// factor := ( parentheses_expression | NUMBER | STRING | call_identifier |
 	// closure)
 	// expression := factor {OPERATOR factor}
