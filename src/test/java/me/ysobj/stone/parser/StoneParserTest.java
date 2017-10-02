@@ -335,6 +335,16 @@ public class StoneParserTest {
 		astNode.evaluate(context);
 	}
 
+	@Test
+	public void testClass() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = createContext();
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("class.stn")));
+		assertThat(astNode.toString(), is(
+				"[x = [func( [] ){ [a = [0], [func( [] ){ [[a] = [a] + [1], [a]] }]] }], [y = [x([])]], [z = [y([])]], [[z] = [y([])]], [[z] = [y([])]], [[print([[z]])]]]"));
+		astNode.evaluate(context);
+	}
+
 	protected String pathToString(String name) throws IOException {
 		Path path = Paths.get("target/test-classes/", name);
 		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
@@ -366,7 +376,7 @@ public class StoneParserTest {
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] { "if", "while", "func", "var", "else" });
+				new String[] { "if", "while", "func", "var", "else","class" });
 	}
 
 }
