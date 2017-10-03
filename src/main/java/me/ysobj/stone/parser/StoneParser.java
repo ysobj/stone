@@ -76,10 +76,15 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				if (children.length == 1) {
+				switch (children.length){
+				case 1: 
 					return children[0];
+				case 2:
+					return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
+				case 3: 
+					return new ASTNodeList(children);
 				}
-				return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
+				throw new RuntimeException();
 			}
 		};
 		SequenceParser factor = new SequenceParser(
@@ -150,6 +155,8 @@ public class StoneParser implements Parser {
 
 		};
 		argList.setParser(args);
+		SequenceParser callObject = new SequenceParser(new KeywordParser("."), new IdentifierParser());
+		callIdentifier.add(new OptionalParser(callObject, true));
 		callIdentifier.add(new OptionalParser(argList, true));
 		Parser operator = new OperatorParser();
 		Parser terminator = new TerminatorParser();

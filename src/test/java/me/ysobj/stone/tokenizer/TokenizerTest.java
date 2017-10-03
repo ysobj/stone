@@ -567,7 +567,7 @@ public class TokenizerTest {
 		assertConvenient(tokenizer, "x", TokenType.IDENTIFIER);
 		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
 		assertConvenient(tokenizer, "Point", TokenType.IDENTIFIER);
-		assertConvenient(tokenizer, ".", TokenType.DOT);
+		assertConvenient(tokenizer, ".", TokenType.KEYWORD);
 		assertConvenient(tokenizer, "new", TokenType.IDENTIFIER);
 		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
 		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);

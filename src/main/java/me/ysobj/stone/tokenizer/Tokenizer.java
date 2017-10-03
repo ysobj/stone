@@ -227,7 +227,7 @@ public class Tokenizer {
 		} else if (c == LF) {
 			tmpType = TokenType.TERMINATOR;
 		} else if (c == DOT) {
-			tmpType = TokenType.DOT;
+			tmpType = TokenType.KEYWORD;
 		}
 		return tmpType;
 	}
