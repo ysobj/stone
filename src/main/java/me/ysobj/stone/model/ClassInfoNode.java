@@ -17,7 +17,11 @@ public class ClassInfoNode extends ASTNode {
 
 	@Override
 	public Object evaluate(Context context) {
-		context.put(identifier.getName(), this);
+		if (context instanceof NestedContext) {
+			((NestedContext) context).putNew(identifier.getName(), this);
+		} else {
+			context.put(identifier.getName(), this);
+		}
 		return Void.VOID;
 	}
 
