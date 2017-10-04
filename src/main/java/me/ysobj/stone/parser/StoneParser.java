@@ -8,6 +8,7 @@ import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.CallFuncNode;
+import me.ysobj.stone.model.CallObjectNode;
 import me.ysobj.stone.model.ClassInfoNode;
 import me.ysobj.stone.model.FuncNode;
 import me.ysobj.stone.model.Identifier;
@@ -76,13 +77,14 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				switch (children.length){
-				case 1: 
+				switch (children.length) {
+				case 1:
 					return children[0];
 				case 2:
 					return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
-				case 3: 
-					return new ASTNodeList(children);
+				case 3:
+					return new CallObjectNode((Identifier) children[0],
+							(Identifier) ((ASTNodeList) children[1]).getNodes()[1], (ASTNodeList) children[1]);
 				}
 				throw new RuntimeException();
 			}
