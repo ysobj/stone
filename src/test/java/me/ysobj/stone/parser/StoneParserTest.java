@@ -340,8 +340,9 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = createContext();
 		ASTNode astNode = parser.parse(createTokenizer(pathToString("class.stn")));
-//		assertThat(astNode.toString(), is(
-//				"[x = [func( [] ){ [a = [0], [func( [] ){ [[a] = [a] + [1], [a]] }]] }], [y = [x([])]], [z = [y([])]], [[z] = [y([])]], [[z] = [y([])]], [[print([[z]])]]]"));
+		assertThat(astNode.toString(), is(
+				"[class Point{[x = [0], [[y = [0]], [func move( [nx, ny] ){[[x] = [nx], [y] = [ny]]}]]]}, [p = [new([])]], [[move([[2], [[Token [normalize=,, type=COMMA], [3]]]])]], [[print([[x(null)]])]], [[print([[y(null)]])]]]"));
+
 		astNode.evaluate(context);
 	}
 
@@ -376,7 +377,7 @@ public class StoneParserTest {
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] { "if", "while", "func", "var", "else","class" });
+				new String[] { "if", "while", "func", "var", "else", "class" });
 	}
 
 }
