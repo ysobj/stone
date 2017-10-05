@@ -1,5 +1,7 @@
 package me.ysobj.stone.parser;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,10 +83,16 @@ public class StoneParser implements Parser {
 				case 1:
 					return children[0];
 				case 2:
+					ASTNodeList tmp = (ASTNodeList) children[1];
+					Token t = tmp.getNodes().length > 0 ? tmp.getNodes()[0].getToken() : null;
+					if (t != null && t.getType() == Token.TokenType.KEYWORD && ".".equals(t.getOriginal())) {
+						return new CallObjectNode((Identifier) children[0],
+								(Identifier) ((ASTNodeList) children[1]).getNodes()[1]);
+					}
 					return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
 				case 3:
 					return new CallObjectNode((Identifier) children[0],
-							(Identifier) ((ASTNodeList) children[1]).getNodes()[1], (ASTNodeList) children[1]);
+							(Identifier) ((ASTNodeList) children[1]).getNodes()[1], (ASTNodeList) children[2]);
 				}
 				throw new RuntimeException();
 			}
