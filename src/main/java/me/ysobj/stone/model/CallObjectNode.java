@@ -21,7 +21,10 @@ public class CallObjectNode extends ASTNode {
 		Object tmp = context.get(objectIdentifier.getName());
 		if (tmp instanceof ClassInfoNode) {
 			ClassInfoNode clazz = (ClassInfoNode) tmp;
-			return clazz;
+			if(identifier.getName().equals("new")) {
+				return new StoneObject();
+			}
+			throw new IllegalArgumentException();
 		}
 		return null;
 		// FuncNode func = (FuncNode) context.get(objectIdentifier.getName());
