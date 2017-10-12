@@ -22,7 +22,20 @@ public class CallObjectNode extends ASTNode {
 		if (tmp instanceof ClassInfoNode) {
 			ClassInfoNode clazz = (ClassInfoNode) tmp;
 			if(identifier.getName().equals("new")) {
-				return new StoneObject();
+				NestedContext nc = new NestedContext();
+				return new StoneObject(clazz, nc);
+			}
+			throw new IllegalArgumentException();
+		}
+		if (tmp instanceof StoneObject) {
+			StoneObject obj = (StoneObject)tmp;
+			Object callee = obj.get(identifier.getName());
+			if(callee instanceof FuncNode) {
+				FuncNode func = (FuncNode)callee;
+				return func.evaluate(context);
+			}
+			if(callee instanceof ASTNode) {
+				return ((ASTNode)callee).evaluate(context);
 			}
 			throw new IllegalArgumentException();
 		}
