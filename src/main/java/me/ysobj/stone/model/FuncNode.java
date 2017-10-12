@@ -23,7 +23,11 @@ public class FuncNode extends ASTNode {
 	@Override
 	public Object evaluate(Context context) {
 		if (identifier != null) {
+			if(context instanceof NestedContext) {
+				((NestedContext)context).putNew(identifier.getName(), this);
+			}else {
 			context.put(identifier.getName(), this);
+			}
 		}else {
 			this.context = context;
 		}

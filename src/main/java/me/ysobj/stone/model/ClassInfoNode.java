@@ -25,4 +25,7 @@ public class ClassInfoNode extends ASTNode {
 		return Void.VOID;
 	}
 
+	public ASTNode getClassBody() {
+		return this.classBody;
+	}
 }

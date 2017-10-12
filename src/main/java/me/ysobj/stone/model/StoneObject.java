@@ -8,6 +8,7 @@ public class StoneObject {
 		super();
 		this.clazz = clazz;
 		this.context = context;
+		this.clazz.getClassBody().evaluate(context);
 	}
 
 	public Object get(String name) {
