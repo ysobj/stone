@@ -32,7 +32,14 @@ public class CallObjectNode extends ASTNode {
 			Object callee = obj.get(identifier.getName());
 			if(callee instanceof FuncNode) {
 				FuncNode func = (FuncNode)callee;
-				return func.evaluate(context);
+				obj.getContext().setOuter(context);
+				NestedContext nc = new NestedContext(obj.getContext());
+				Identifier[] ids = null;
+				if (func.getParamList() != null) {
+					ids = func.getParamList().getNodes();
+				}
+				setupContext(nc, ids, args.nodes);
+				return func.evaluate(nc);
 			}
 			if(callee instanceof ASTNode) {
 				return ((ASTNode)callee).evaluate(context);
@@ -59,6 +66,14 @@ public class CallObjectNode extends ASTNode {
 		// return func.getBlock().evaluate(nestedContext);
 	}
 
+
+	protected void setupContext(NestedContext context, Identifier[] ids, ASTNode[] args) {
+		for (int i = 0; i < args.length; i++) {
+			ASTNode arg = args[i];
+			Identifier identifier = ids[i];
+			context.putNew(identifier.getName(), arg.evaluate(context));
+		}
+	}	
 	@Override
 	public String toString() {
 		return identifier + "(" + args + ")";

@@ -15,4 +15,7 @@ public class StoneObject {
 		return context.get(name);
 	}
 
+	public NestedContext getContext() {
+		return this.context;
+	}
 }
