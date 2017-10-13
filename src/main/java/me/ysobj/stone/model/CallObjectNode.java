@@ -44,7 +44,7 @@ public class CallObjectNode extends ASTNode {
 			if(callee instanceof ASTNode) {
 				return ((ASTNode)callee).evaluate(context);
 			}
-			throw new IllegalArgumentException();
+			return callee;
 		}
 		return null;
 		// FuncNode func = (FuncNode) context.get(objectIdentifier.getName());

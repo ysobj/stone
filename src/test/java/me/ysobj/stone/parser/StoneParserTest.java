@@ -1,5 +1,6 @@
 package me.ysobj.stone.parser;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -21,6 +22,7 @@ import me.ysobj.stone.model.FuncNode;
 import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.model.NestedContext;
 import me.ysobj.stone.model.ParamList;
+import me.ysobj.stone.model.StoneObject;
 import me.ysobj.stone.model.Token;
 import me.ysobj.stone.model.Token.TokenType;
 import me.ysobj.stone.model.Void;
@@ -344,6 +346,10 @@ public class StoneParserTest {
 				"[class Point{[x = [0], [[y = [0]], [func move( [nx, ny] ){[[x] = [nx], [y] = [ny]]}]]]}, [p = [new([])]], [[move([[2], [[Token [normalize=,, type=COMMA], [3]]]])]], [[print([[x(null)]])]], [[print([[y(null)]])]]]"));
 
 		astNode.evaluate(context);
+		assertThat(context.get("p"), is(instanceOf(StoneObject.class)));
+		StoneObject obj = (StoneObject) context.get("p");
+		assertThat(obj.get("x"), is(2L));
+		assertThat(obj.get("y"), is(3L));
 	}
 
 	protected String pathToString(String name) throws IOException {
