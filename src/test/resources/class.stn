@@ -1,0 +1,16 @@
+class Point{
+  var x = 6;
+  var y = 7;
+  func move(nx, ny){
+    x = nx;
+    y = ny;
+  };
+  func calc(){
+    x + y
+  };
+};
+var p = Point.new();
+p.move(2,3);
+p.calc();
+print (p.x);
+print (p.y);

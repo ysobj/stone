@@ -1,5 +1,7 @@
 package me.ysobj.stone.parser;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,8 @@ import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.model.ASTNodeList;
 import me.ysobj.stone.model.BinaryExpression;
 import me.ysobj.stone.model.CallFuncNode;
+import me.ysobj.stone.model.CallObjectNode;
+import me.ysobj.stone.model.ClassInfoNode;
 import me.ysobj.stone.model.FuncNode;
 import me.ysobj.stone.model.Identifier;
 import me.ysobj.stone.model.IfNode;
@@ -75,10 +79,22 @@ public class StoneParser implements Parser {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
-				if (children.length == 1) {
+				switch (children.length) {
+				case 1:
 					return children[0];
+				case 2:
+					ASTNodeList tmp = (ASTNodeList) children[1];
+					Token t = tmp.getNodes().length > 0 ? tmp.getNodes()[0].getToken() : null;
+					if (t != null && t.getType() == Token.TokenType.KEYWORD && ".".equals(t.getOriginal())) {
+						return new CallObjectNode((Identifier) children[0],
+								(Identifier) ((ASTNodeList) children[1]).getNodes()[1]);
+					}
+					return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
+				case 3:
+					return new CallObjectNode((Identifier) children[0],
+							(Identifier) ((ASTNodeList) children[1]).getNodes()[1], (ASTNodeList) children[2]);
 				}
-				return new CallFuncNode((Identifier) children[0], (ASTNodeList) children[1]);
+				throw new RuntimeException();
 			}
 		};
 		SequenceParser factor = new SequenceParser(
@@ -149,6 +165,8 @@ public class StoneParser implements Parser {
 
 		};
 		argList.setParser(args);
+		SequenceParser callObject = new SequenceParser(new KeywordParser("."), new IdentifierParser());
+		callIdentifier.add(new OptionalParser(callObject, true));
 		callIdentifier.add(new OptionalParser(argList, true));
 		Parser operator = new OperatorParser();
 		Parser terminator = new TerminatorParser();
@@ -157,6 +175,19 @@ public class StoneParser implements Parser {
 		expression.add(expressionOption);
 		parenthesesExp.setParser(expression);
 		Parser simple = expression;
+
+		SequenceParser classDef = new SequenceParser(new KeywordParser("class"),
+				new IdentifierParser()/* , classBody */) {
+
+			@Override
+			protected ASTNode build(ASTNode[] children) {
+				return new ClassInfoNode((Identifier) children[1], children[2]);
+			}
+
+		};
+		ParenthesesParser classBody = new ParenthesesParser(BracketType.BRACKET);
+		classDef.add(classBody);
+
 		SequenceParser ifParser = new SequenceParser(new KeywordParser("if"), parenthesesExp /* ,block */) {
 
 			@Override
@@ -188,6 +219,10 @@ public class StoneParser implements Parser {
 			}
 
 		};
+		Parser defParser = new ChoiceParser(func, varParser);
+		Parser defParserOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, defParser)));
+		classBody.setParser(new SequenceParser(defParser, defParserOption));
+
 		Parser statement = new ChoiceParser(ifParser, whileParser, varParser, simple);
 		Parser blockOption = new OptionalParser(new RepeatParser(new SequenceParser(terminator, statement)));
 		ParenthesesParser block = new ParenthesesParser(BracketType.BRACKET);
@@ -210,7 +245,7 @@ public class StoneParser implements Parser {
 		whileParser.add(block);
 		func.add(block);
 		closure.add(block);
-		Parser code = new ChoiceParser(func, statement);
+		Parser code = new ChoiceParser(classDef, func, statement);
 		parser = new SequenceParser(code, new OptionalParser(new RepeatParser(new SequenceParser(terminator, code)))) {
 			@Override
 			protected ASTNode build(ASTNode[] children) {
@@ -242,17 +277,23 @@ public class StoneParser implements Parser {
 	// param_list := "(" [params] ")"
 	// func := "func" IDENTIFIER param_list block
 	// closure := "func" param_list block
-	// call_identifier := IDENTIFIER {arg_list}
+	// call_identifier := IDENTIFIER [DOT IDENTIFIER] {arg_list}
 	// factor := ( parentheses_expression | NUMBER | STRING | call_identifier |
 	// closure)
 	// expression := factor {OPERATOR factor}
 	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"
 	// simple := expression
-	// statement := "if" parentheses_expression block ["else" block]
-	// | while parentheses_expression block
-	// | "var" IDENTIFIER OPERATOR expression
+	// class_def := "class" IDENTIFIER class_body
+	// class_body := "{" def_statement {TERMINATOR [ def_statement ]} "}"
+	// def_statement = func | var_statement
+	// if_statement := "if" parentheses_expression block ["else" block]
+	// while_statement := while parentheses_expression block
+	// var_statement := "var" IDENTIFIER OPERATOR expression
+	// statement := if_statement
+	// | while_statement
+	// | var_statement
 	// | simple
-	// code := func | statement
+	// code := classDef | func | statement
 	// program := code {TERMINATOR code}
 }

@@ -36,6 +36,8 @@ public class Tokenizer {
 
 	private static final int BRACE_CLOSE = (int) '}';
 
+	private static final int DOT = (int) '.';
+
 	private static final int LF = (int) '\n';
 
 	public Tokenizer(String string) {
@@ -120,6 +122,16 @@ public class Tokenizer {
 						return createToken(sb.toString(), readLength);
 					}
 					isNumeric = true;
+					break;
+				case DOT:
+					if (!isNumeric) {
+						if (sb.length() > 0) {
+							this.preRead = r;
+							return createToken(sb.toString(), readLength);
+						} else {
+							return createToken(String.valueOf((char) r), readLength);
+						}
+					}
 					break;
 				case '+':
 				case '-':
@@ -214,6 +226,8 @@ public class Tokenizer {
 			tmpType = TokenType.TERMINATOR;
 		} else if (c == LF) {
 			tmpType = TokenType.TERMINATOR;
+		} else if (c == DOT) {
+			tmpType = TokenType.KEYWORD;
 		}
 		return tmpType;
 	}

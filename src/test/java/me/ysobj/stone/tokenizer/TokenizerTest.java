@@ -559,6 +559,21 @@ public class TokenizerTest {
 		assertConvenient(tokenizer, "0", TokenType.NUMBER);
 		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
 	}
+	
+	@Test
+	public void testCallMethod() {
+		Tokenizer tokenizer = createStoneTokenizer("var x = Point.new();");
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "x", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "Point", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, ".", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "new", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
+
+	}
 
 	protected void assertConvenient(Tokenizer tokenizer, String org, TokenType type) {
 		Token tmp = tokenizer.next();
