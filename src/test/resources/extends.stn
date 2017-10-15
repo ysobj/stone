@@ -1,0 +1,15 @@
+class Rectangle{
+  var height;
+  var width;
+  func calcArea(){
+    height * width
+  };
+};
+class NamedRectangle extends Rectangle{
+  var name;
+}
+var r = NamedRectangle.new();
+r.height = 10;
+r.width = 5;
+r.name = 'shape';
+var x = r.calcArea();
