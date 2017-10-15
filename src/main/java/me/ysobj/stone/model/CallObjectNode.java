@@ -39,7 +39,7 @@ public class CallObjectNode extends ASTNode {
 					ids = func.getParamList().getNodes();
 				}
 				setupContext(nc, ids, args.nodes);
-				return func.evaluate(nc);
+				return func.getBlock().evaluate(nc);
 			}
 			if(callee instanceof ASTNode) {
 				return ((ASTNode)callee).evaluate(context);
@@ -47,23 +47,6 @@ public class CallObjectNode extends ASTNode {
 			return callee;
 		}
 		return null;
-		// FuncNode func = (FuncNode) context.get(objectIdentifier.getName());
-		// Identifier[] ids = null;
-		// if (func.getParamList() != null) {
-		// ids = func.getParamList().getNodes();
-		// }
-		// ASTNode[] argArray = args.nodes;
-		// if (func.getContext() != null) {
-		// ((NestedContext) func.getContext()).setOuter(context);
-		// context = func.getContext();
-		// }
-		// NestedContext nestedContext = new NestedContext(context);
-		// for (int i = 0; i < argArray.length; i++) {
-		// ASTNode arg = argArray[i];
-		// Identifier identifier = ids[i];
-		// nestedContext.putNew(identifier.getName(), arg.evaluate(context));
-		// }
-		// return func.getBlock().evaluate(nestedContext);
 	}
 
 
@@ -76,7 +59,10 @@ public class CallObjectNode extends ASTNode {
 	}	
 	@Override
 	public String toString() {
-		return identifier + "(" + args + ")";
+		if(args != null) {
+			return String.format("%s.%s(%s)", objectIdentifier.toString(), identifier.toString() ,args);
+		}
+		return String.format("%s.%s",objectIdentifier.toString() ,identifier.toString()) ;
 	}
 
 }
