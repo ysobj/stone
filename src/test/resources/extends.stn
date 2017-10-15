@@ -1,13 +1,13 @@
 class Rectangle{
-  var height;
-  var width;
+  var height = 0;
+  var width = 0;
   func calcArea(){
     height * width
   };
 };
 class NamedRectangle extends Rectangle{
-  var name;
-}
+  var name = '';
+};
 var r = NamedRectangle.new();
 r.height = 10;
 r.width = 5;

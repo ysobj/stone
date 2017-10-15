@@ -1,7 +1,5 @@
 package me.ysobj.stone.parser;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -284,7 +282,7 @@ public class StoneParser implements Parser {
 	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"
 	// simple := expression
-	// class_def := "class" IDENTIFIER class_body
+	// class_def := "class" IDENTIFIER { "extends" IDENTIFIER } class_body
 	// class_body := "{" def_statement {TERMINATOR [ def_statement ]} "}"
 	// def_statement = func | var_statement
 	// if_statement := "if" parentheses_expression block ["else" block]
@@ -294,6 +292,6 @@ public class StoneParser implements Parser {
 	// | while_statement
 	// | var_statement
 	// | simple
-	// code := classDef | func | statement
+	// code := class_def | func | statement
 	// program := code {TERMINATOR code}
 }

@@ -1,0 +1,73 @@
+[
+	class Point{
+		[
+			x = [6], 
+			[
+				[
+					y = [7]
+				], 
+				[
+					func move( [nx, ny] ){
+						[
+							[x] = [nx], 
+							[y] = [ny]
+						]
+					}
+				], 
+				[
+					func calc( [] ){
+						[
+							[x] + [y]
+						]
+					}
+				]
+			]
+		]
+	}, 
+	[
+		class Dummy{
+			[
+				func test( [] ){
+					[
+						[1]
+					]
+				}
+			]
+		}
+	], 
+	[
+		p = [
+			Point.new([])
+		]
+	], 
+	[
+		[
+			p.move(
+				[
+					[2], 
+					[
+						[Token 
+							[normalize=,, type=COMMA], 
+							[3]
+						]
+					]
+				]
+			)
+		]
+	], 
+	[
+		[
+			p.calc([])
+		]
+	], 
+	[
+		[
+			print([[p.x]])
+		]
+	], 
+	[
+		[
+			print([[p.y]])
+		]
+	]
+]

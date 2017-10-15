@@ -354,6 +354,20 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = createContext();
 		ASTNode astNode = parser.parse(createTokenizer(pathToString("class.stn")));
+		assertThat(astNode.toString(), is(pathToStringWithoutNewLine("class.ast")));
+
+		astNode.evaluate(context);
+		assertThat(context.get("p"), is(instanceOf(StoneObject.class)));
+		StoneObject obj = (StoneObject) context.get("p");
+		assertThat(obj.get("x"), is(2L));
+		assertThat(obj.get("y"), is(3L));
+	}
+
+	@Test
+	public void testExtends() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = createContext();
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("extends.stn")));
 		assertThat(astNode.toString(), is(
 				"[class Point{[x = [6], [[y = [7]], [func move( [nx, ny] ){[[x] = [nx], [y] = [ny]]}], [func calc( [] ){[[x] + [y]]}]]]}, [p = [Point.new([])]], [[p.move([[2], [[Token [normalize=,, type=COMMA], [3]]]])]], [[p.calc([])]], [[print([[p.x]])]], [[print([[p.y]])]]]"));
 
@@ -367,6 +381,12 @@ public class StoneParserTest {
 	protected String pathToString(String name) throws IOException {
 		Path path = Paths.get("target/test-classes/", name);
 		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
+	}
+
+	protected String pathToStringWithoutNewLine(String name) throws IOException {
+		Path path = Paths.get("target/test-classes/", name);
+		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining()).replaceAll("(\t|\n)",
+				"");
 	}
 
 	protected Context createContext() {
@@ -395,7 +415,7 @@ public class StoneParserTest {
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] { "if", "while", "func", "var", "else", "class" });
+				new String[] { "if", "while", "func", "var", "else", "class", "extends" });
 	}
 
 }

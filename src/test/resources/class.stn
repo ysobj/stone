@@ -9,6 +9,11 @@ class Point{
     x + y
   };
 };
+class Dummy{
+  func test(){
+    1
+  };
+};
 var p = Point.new();
 p.move(2,3);
 p.calc();
