@@ -1,7 +1,5 @@
 package me.ysobj.stone.parser;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +25,7 @@ public class StoneParser implements Parser {
 
 	public StoneParser() {
 		Parser param = new IdentifierParser();
-		Parser paramsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), param)));
-		Parser params = new SequenceParser(param, paramsOption);
+		Parser params = new OneToManyParser(param, new CommaParser());
 		ParenthesesParser paramList = new ParenthesesParser(BracketType.PARENTHESIS);
 
 		paramList.setParser(new OptionalParser(params) {
@@ -150,8 +147,7 @@ public class StoneParser implements Parser {
 			}
 		};
 		Parser arg = expression;
-		Parser argsOption = new OptionalParser(new RepeatParser(new SequenceParser(new CommaParser(), arg)));
-		Parser args = new OptionalParser(new SequenceParser(arg, argsOption));
+		Parser args = new OptionalParser(new OneToManyParser(arg, new CommaParser()));
 		ParenthesesParser argList = new ParenthesesParser(BracketType.PARENTHESIS) {
 
 			@Override

@@ -12,6 +12,10 @@ public class OneToManyParser implements Parser {
 	private Parser parser;
 	private Parser separator;
 
+	public OneToManyParser() {
+
+	}
+
 	public OneToManyParser(Parser parser, Parser separator) {
 		super();
 		this.parser = parser;
@@ -31,6 +35,14 @@ public class OneToManyParser implements Parser {
 			nodes.add(parser.parse(tokenizer));
 		}
 		return new ASTNodeList(nodes.toArray(new ASTNode[] {}));
+	}
+
+	public void setParser(Parser parser) {
+		this.parser = parser;
+	}
+
+	public void setSeparator(Parser separator) {
+		this.separator = separator;
 	}
 
 }

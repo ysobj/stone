@@ -281,7 +281,7 @@ public class StoneParserTest {
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func abc(x,y){ x * y}; var z = abc(3,4);"));
 		assertThat(astNode.toString(),
-				is("[func abc( [x, y] ){[[x] * [y]]}, [z = [abc([[3], [[Token [normalize=,, type=COMMA], [4]]]])]]]"));
+				is("[func abc( [x, y] ){[[x] * [y]]}, [z = [abc([[3], [4]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("z"), is(12L));
 	}
@@ -355,8 +355,7 @@ public class StoneParserTest {
 		Context context = createContext();
 		ASTNode astNode = parser.parse(createTokenizer(pathToString("class.stn")));
 		assertThat(astNode.toString(), is(
-				"[class Point{[x = [6], [[y = [7]], [func move( [nx, ny] ){[[x] = [nx], [y] = [ny]]}], [func calc( [] ){[[x] + [y]]}]]]}, [p = [Point.new([])]], [[p.move([[2], [[Token [normalize=,, type=COMMA], [3]]]])]], [[p.calc([])]], [[print([[p.x]])]], [[print([[p.y]])]]]"));
-
+				"[class Point{[x = [6], [[y = [7]], [func move( [nx, ny] ){[[x] = [nx], [y] = [ny]]}], [func calc( [] ){[[x] + [y]]}]]]}, [p = [Point.new([])]], [[p.move([[2], [3]])]], [[p.calc([])]], [[print([[p.x]])]], [[print([[p.y]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("p"), is(instanceOf(StoneObject.class)));
 		StoneObject obj = (StoneObject) context.get("p");
