@@ -102,6 +102,8 @@ public class Tokenizer {
 		int readLength = 0;
 		boolean isOpen = false;
 		boolean isNumeric = false;
+		boolean isIdentifier = false;
+		boolean isOperator = false;
 		while (true) {
 			try {
 				int r = read();
@@ -117,11 +119,13 @@ public class Tokenizer {
 				case '8':
 				case '9':
 				case '0':
-					if (!isNumeric && sb.length() > 0) {
+					if (!isNumeric && !isIdentifier && sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
 					}
-					isNumeric = true;
+					if (!isOpen && !isIdentifier) {
+						isNumeric = true;
+					}
 					break;
 				case DOT:
 					if (!isNumeric) {
@@ -140,10 +144,12 @@ public class Tokenizer {
 				case '%':
 				case '<':
 				case '>':
-					if (sb.length() > 0) {
+				case '=':
+					if (!isOperator && sb.length() > 0) {
 						this.preRead = r;
 						return createToken(sb.toString(), readLength);
 					}
+					isOperator = true;
 					break;
 				case COMMA:
 				case PAREN_OPEN:
@@ -181,6 +187,8 @@ public class Tokenizer {
 						readLength = 0;
 						continue;
 					}
+				default:
+					isIdentifier = true;
 				}
 				sb.append((char) r);
 			} catch (IOException e) {

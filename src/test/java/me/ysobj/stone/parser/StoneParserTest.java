@@ -280,8 +280,7 @@ public class StoneParserTest {
 		Parser parser = new StoneParser();
 		Context context = new Context();
 		ASTNode astNode = parser.parse(createTokenizer("func abc(x,y){ x * y}; var z = abc(3,4);"));
-		assertThat(astNode.toString(),
-				is("[func abc( [x, y] ){[[x] * [y]]}, [z = [abc([[3], [4]])]]]"));
+		assertThat(astNode.toString(), is("[func abc( [x, y] ){[[x] * [y]]}, [z = [abc([[3], [4]])]]]"));
 		astNode.evaluate(context);
 		assertThat(context.get("z"), is(12L));
 	}
@@ -363,9 +362,30 @@ public class StoneParserTest {
 		assertThat(obj.get("y"), is(3L));
 	}
 
+	@Test
+	public void testExtends() throws Exception {
+		Parser parser = new StoneParser();
+		Context context = createContext();
+		ASTNode astNode = parser.parse(createTokenizer(pathToString("extends.stn")));
+		assertThat(astNode.toString(), is(pathToStringWithNormalize("extends.ast")));
+
+		astNode.evaluate(context);
+		assertThat(context.get("p"), is(instanceOf(StoneObject.class)));
+		StoneObject obj = (StoneObject) context.get("p");
+		assertThat(obj.get("x"), is(2L));
+		assertThat(obj.get("y"), is(3L));
+		assertThat(obj.get("z"), is(4L));
+	}
+
 	protected String pathToString(String name) throws IOException {
 		Path path = Paths.get("target/test-classes/", name);
 		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining());
+	}
+
+	protected String pathToStringWithNormalize(String name) throws IOException {
+		Path path = Paths.get("target/test-classes/", name);
+		return Files.readAllLines(path, StandardCharsets.UTF_8).stream().collect(Collectors.joining())
+				.replaceAll("(\n|\t)", "");
 	}
 
 	protected Context createContext() {
@@ -394,7 +414,7 @@ public class StoneParserTest {
 	protected Tokenizer createTokenizer(String str) {
 		return new Tokenizer(str,
 				new String[] { "+", "-", "*", "/", "=", "==", "<", ">", "<=", "!", ">=", "!=", "&&", "||" },
-				new String[] { "if", "while", "func", "var", "else", "class" });
+				new String[] { "if", "while", "func", "var", "else", "class", "extends" });
 	}
 
 }

@@ -8,6 +8,11 @@ public class StoneObject {
 		super();
 		this.clazz = clazz;
 		this.context = context;
+		
+		ClassInfoNode superClass = this.clazz.getSuperClass();
+		if(superClass != null) {
+			superClass.getClassBody().evaluate(context);
+		}
 		this.clazz.getClassBody().evaluate(context);
 	}
 

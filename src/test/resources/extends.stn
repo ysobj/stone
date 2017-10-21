@@ -1,0 +1,22 @@
+class Point{
+  var x = 6;
+  var y = 7;
+  func move(nx, ny){
+    x = nx;
+    y = ny;
+  };
+  func calc(){
+    x + y
+  };
+};
+class Point3D extends Point{
+  var z = 8;
+  func set(nx, ny, nz){
+    x = nx;
+    y = ny;
+    z = nz;
+  }
+};
+var p = Point3D.new();
+p.set(4, 4, 4);
+p.move(2,3);

@@ -1,0 +1,16 @@
+[
+	class Point{[
+		x = [6], 
+		[[y = [7]], 
+		[
+			func move( [nx, ny] ){[
+				[x] = [nx], 
+				[y] = [ny]
+			]}
+		], 
+		[
+			func calc( [] ){[
+				[x] + [y]
+			]}
+		]
+		]]}, [class Point3D extends Point{[z = [8], [[func set( [nx, ny, nz] ){[[x] = [nx], [y] = [ny], [z] = [nz]]}]]]}], [p = [Point3D.new([])]], [[p.set([[4], [4], [4]])]], [[p.move([[2], [3]])]]]

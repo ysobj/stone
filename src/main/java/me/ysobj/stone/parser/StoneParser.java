@@ -172,11 +172,16 @@ public class StoneParser implements Parser {
 		parenthesesExp.setParser(expression);
 		Parser simple = expression;
 
-		SequenceParser classDef = new SequenceParser(new KeywordParser("class"),
-				new IdentifierParser()/* , classBody */) {
+		SequenceParser classDef = new SequenceParser(new KeywordParser("class"), new IdentifierParser(),
+				new OptionalParser(
+						new SequenceParser(new KeywordParser("extends"), new IdentifierParser()))/* , classBody */) {
 
 			@Override
 			protected ASTNode build(ASTNode[] children) {
+				if (children.length == 4) {
+					ASTNodeList tmp = (ASTNodeList) children[2];
+					return new ClassInfoNode((Identifier) children[1], (Identifier) tmp.getNodes()[1], children[3]);
+				}
 				return new ClassInfoNode((Identifier) children[1], children[2]);
 			}
 
@@ -280,7 +285,7 @@ public class StoneParser implements Parser {
 	// parentheses_expression := "(" expression ")"
 	// block := "{" statement {TERMINATOR [ statement ]} "}"
 	// simple := expression
-	// class_def := "class" IDENTIFIER class_body
+	// class_def := "class" IDENTIFIER class_body {"extends" IDENTIFIER}
 	// class_body := "{" def_statement {TERMINATOR [ def_statement ]} "}"
 	// def_statement = func | var_statement
 	// if_statement := "if" parentheses_expression block ["else" block]

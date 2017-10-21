@@ -559,7 +559,7 @@ public class TokenizerTest {
 		assertConvenient(tokenizer, "0", TokenType.NUMBER);
 		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
 	}
-	
+
 	@Test
 	public void testCallMethod() {
 		Tokenizer tokenizer = createStoneTokenizer("var x = Point.new();");
@@ -572,7 +572,32 @@ public class TokenizerTest {
 		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
 		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
 		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
+	}
 
+	@Test
+	public void testIdentifierIncludingNumber() {
+		Tokenizer tokenizer = createStoneTokenizer("var x = Point3D.new();");
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "x", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "Point3D", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, ".", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "new", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "(", TokenType.PAREN_OPEN);
+		assertConvenient(tokenizer, ")", TokenType.PAREN_CLOSE);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
+	}
+
+	@Test
+	public void testHoge() {
+		Tokenizer tokenizer = createStoneTokenizer("var d = 1>=1;");
+		assertConvenient(tokenizer, "var", TokenType.KEYWORD);
+		assertConvenient(tokenizer, "d", TokenType.IDENTIFIER);
+		assertConvenient(tokenizer, "=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "1", TokenType.NUMBER);
+		assertConvenient(tokenizer, ">=", TokenType.OPERATOR);
+		assertConvenient(tokenizer, "1", TokenType.NUMBER);
+		assertConvenient(tokenizer, ";", TokenType.TERMINATOR);
 	}
 
 	protected void assertConvenient(Tokenizer tokenizer, String org, TokenType type) {
