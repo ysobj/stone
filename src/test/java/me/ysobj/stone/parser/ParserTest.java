@@ -6,9 +6,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
-import org.junit.runner.notification.Failure;
-
 import me.ysobj.stone.exception.ParseException;
 import me.ysobj.stone.model.ASTNode;
 import me.ysobj.stone.tokenizer.Tokenizer;
@@ -181,28 +178,33 @@ public class ParserTest {
 		assertThat(parser.parse(createTokenizer("select A,A,A from hoge")), not(nullValue()));
 		assertThat(parser.parse(createTokenizer("select A from fuga")), not(nullValue()));
 	}
-	
+
 	@Test
-	public void testOneToManyParserOne() throws Exception{
+	public void testOneToManyParserOne() throws Exception {
 		Parser params = new OneToManyParser(new IdentifierParser(), new CommaParser());
-		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"), new IdentifierParser() );
+		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"),
+				new IdentifierParser());
 		ASTNode actual = parser.parse(createTokenizer("select ab from hoge"));
-		assertThat(actual.toString(), is("[Token [normalize=SELECT, type=KEYWORD], [ab], Token [normalize=FROM, type=KEYWORD], hoge]"));
-		 
+		assertThat(actual.toString(),
+				is("[Token [normalize=SELECT, type=KEYWORD], [ab], Token [normalize=FROM, type=KEYWORD], hoge]"));
+
 	}
-	
+
 	@Test
-	public void testOneToManyParserMany() throws Exception{
+	public void testOneToManyParserMany() throws Exception {
 		Parser params = new OneToManyParser(new IdentifierParser(), new CommaParser());
-		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"), new IdentifierParser() );
+		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"),
+				new IdentifierParser());
 		ASTNode actual = parser.parse(createTokenizer("select ab,cd,ef from hoge"));
-		assertThat(actual.toString(), is("[Token [normalize=SELECT, type=KEYWORD], [ab, cd, ef], Token [normalize=FROM, type=KEYWORD], hoge]"));
+		assertThat(actual.toString(), is(
+				"[Token [normalize=SELECT, type=KEYWORD], [ab, cd, ef], Token [normalize=FROM, type=KEYWORD], hoge]"));
 	}
-	
-	@Test(expected=ParseException.class)
-	public void testOneToManyParserNothing() throws Exception{
+
+	@Test(expected = ParseException.class)
+	public void testOneToManyParserNothing() throws Exception {
 		Parser params = new OneToManyParser(new IdentifierParser(), new CommaParser());
-		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"), new IdentifierParser() );
+		Parser parser = new SequenceParser(new KeywordParser("select"), params, new KeywordParser("from"),
+				new IdentifierParser());
 		parser.parse(createTokenizer("select from hoge"));
 	}
 }
